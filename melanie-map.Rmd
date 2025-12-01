@@ -148,6 +148,7 @@ tagList(
 )
 ```
 
+
 </div>
 
 ### <span class="dex-title">Module 02 — Stat Mapping Interface</span> {data-width=70}
@@ -188,3 +189,70 @@ Row
 - The `journal` theme plus custom styling blend a naturalist field-guide feel with a modern Pokédex interface.
 
 </div>
+
+
+Explorer
+=====================================
+
+**Stat Explorer Module:** Visualizing how Pokémon stats relate to each other.  
+<span class="caption-warm">A Pokédex-style analytical view of stat relationships.</span>
+
+<hr class="field-sep">
+
+Row {data-height=120}
+-------------------------------------
+
+### <span class="dex-title">Module 01 — Trainer Controls</span> {data-width=30}
+
+<div class="trainer-panel">
+
+<span class="caption-warm">Use these settings to customize your stat exploration as a trainer.</span>
+
+```{r}
+# Controls for map page — real data will be linked later
+
+tagList(
+  div(class = "control-label", "Primary Type Filter"),
+  selectInput(
+    "filter_type",
+    NULL,
+    choices = c("All"),
+    selected = "All"
+  ),
+  div(class = "control-label", "Generation Filter"),
+  selectInput(
+    "filter_gen",
+    NULL,
+    choices = c("All"),
+    selected = "All"
+  ),
+  div(class = "control-label", "X-Axis Stat"),
+  selectInput(
+    "x_stat",
+    NULL,
+    choices = c(
+      "HP" = "hp",
+      "Attack" = "attack",
+      "Defense" = "defense",
+      "Special Attack" = "special_attack",
+      "Special Defense" = "special_defense",
+      "Speed" = "speed"
+    ),
+    selected = "attack"
+  ),
+  div(class = "control-label", "Y-Axis Stat"),
+  selectInput(
+    "y_stat",
+    NULL,
+    choices = c(
+      "HP" = "hp",
+      "Attack" = "attack",
+      "Defense" = "defense",
+      "Special Attack" = "special_attack",
+      "Special Defense" = "special_defense",
+      "Speed" = "speed"
+    ),
+    selected = "defense"
+  )
+)
+```
