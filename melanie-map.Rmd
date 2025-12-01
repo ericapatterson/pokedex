@@ -1,0 +1,190 @@
+---
+title: "Pokédex Explorer — Stat Map Module"
+output:
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    vertical_layout: fill
+    theme: journal
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(flexdashboard)
+library(shiny)
+```
+
+<style>
+/* Pokémon-themed module titles */
+.dex-title {
+  font-family: serif;
+  font-size: 118%;
+  font-weight: bold;
+  color: #3b2f23;
+  margin-bottom: 4px;
+}
+
+/* Warm-toned captions */
+.caption-warm {
+  font-style: italic;
+  color: #6a604d;
+  font-size: 90%;
+}
+
+/* Dashed field-guide separator */
+hr.field-sep {
+  border-top: 1px dashed #b8ad99;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  opacity: 0.8;
+}
+
+/* Notes card look */
+.notes-card {
+  background-color: #faf7f0;
+  border: 1px solid #d5ccb8;
+  padding: 10px 12px;
+  border-radius: 6px;
+}
+
+/* Trainer control panel styling (tight, clean) */
+.trainer-panel {
+  background-color: #fdfaf4;
+  border: 1px solid #e0d4bd;
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+
+/* Stat map panel styling with faint Pokéball ring (tight, clean) */
+.map-panel {
+  background: radial-gradient(circle at 30% 30%, rgba(229, 59, 59, 0.08) 0, rgba(229, 59, 59, 0.0) 55%),
+              #fefdf8;
+  border: 1px solid #e0d4bd;
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+
+/* Pokédex-style labels for controls */
+.control-label {
+  font-weight: 600;
+  font-size: 88%;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #3b2f23;
+  margin-top: 4px;
+  margin-bottom: 2px;
+}
+
+/* Reduce default margin on h3 section headers */
+.section.level3 > h3 {
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+</style>
+
+Explorer
+=====================================
+
+**Stat Explorer Module:** Visualizing how Pokémon stats relate to each other.  
+<span class="caption-warm">A Pokédex-style analytical view of stat relationships.</span>
+
+<hr class="field-sep">
+
+Row {data-height=120}
+-------------------------------------
+
+### <span class="dex-title">Module 01 — Trainer Controls</span> {data-width=30}
+
+<div class="trainer-panel">
+
+<span class="caption-warm">Use these settings to customize your stat exploration as a trainer.</span>
+
+```{r}
+# Controls for map page — real data will be linked later
+
+tagList(
+  div(class = "control-label", "Primary Type Filter"),
+  selectInput(
+    "filter_type",
+    NULL,
+    choices = c("All"),
+    selected = "All"
+  ),
+  div(class = "control-label", "Generation Filter"),
+  selectInput(
+    "filter_gen",
+    NULL,
+    choices = c("All"),
+    selected = "All"
+  ),
+  div(class = "control-label", "X-Axis Stat"),
+  selectInput(
+    "x_stat",
+    NULL,
+    choices = c(
+      "HP" = "hp",
+      "Attack" = "attack",
+      "Defense" = "defense",
+      "Special Attack" = "special_attack",
+      "Special Defense" = "special_defense",
+      "Speed" = "speed"
+    ),
+    selected = "attack"
+  ),
+  div(class = "control-label", "Y-Axis Stat"),
+  selectInput(
+    "y_stat",
+    NULL,
+    choices = c(
+      "HP" = "hp",
+      "Attack" = "attack",
+      "Defense" = "defense",
+      "Special Attack" = "special_attack",
+      "Special Defense" = "special_defense",
+      "Speed" = "speed"
+    ),
+    selected = "defense"
+  )
+)
+```
+
+</div>
+
+### <span class="dex-title">Module 02 — Stat Mapping Interface</span> {data-width=70}
+
+<div class="map-panel">
+
+<span class="caption-warm">Adjust filters and stat axes to visualize how different Pokémon are positioned in stat space.</span>
+
+```{r}
+# Placeholder plot — safe and error-free
+renderPlot({
+  ggplot2::ggplot(data.frame(x = 0, y = 0), ggplot2::aes(x, y)) +
+    ggplot2::geom_point(alpha = 0) +
+    ggplot2::labs(title = "Pokémon Stat Map") +
+    ggplot2::theme_void()
+})
+```
+
+</div>
+
+Row
+-------------------------------------
+
+<hr class="field-sep">
+
+### <span class="dex-title">Pokédex Field Notes</span> 🌿
+
+<div class="notes-card">
+
+**Design Notes (Melanie):**
+
+- This is the layout for the Stat Map page of our Pokédex dashboard.  
+- “Trainer Controls” and “Stat Mapping Interface” use Pokédex-style wording to match the theme.  
+- The trainer panel groups all interactive controls in one place for a clean, guided experience.  
+- The stat map panel uses a faint Pokéball ring effect and warm tones to keep the aesthetic subtle but thematic.  
+- When the user changes the selected stats or filters, the coded version of this page will update the visualization in the map panel.  
+- Kyle and Tayin will replace the placeholder plot with the real stat visualizations.  
+- The `journal` theme plus custom styling blend a naturalist field-guide feel with a modern Pokédex interface.
+
+</div>
