@@ -1,0 +1,141 @@
+---
+title: "Pokemap"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(tidyverse)
+library(sf)
+library(leaflet)
+library(DT)
+library(shiny)
+
+# Load saved data: co_counties_ecotones and pokemon_clean_df
+load("poke_data.RData")
+
+# Transform counties for leaflet
+co_counties_map <- co_counties_ecotones %>%
+  st_transform(4326)
+
+#adding pokemon by county data
+poke_by_county <- co_counties_map %>%
+  st_drop_geometry() %>%
+  select(NAME, ecotone) %>%
+  inner_join(
+    pokemon_clean_df,
+    by = "ecotone",
+    relationship = "many-to-many")
+```
+
+Column {data-width=65}
+-----------------------------------------------------------------------
+
+### Colorado Pokemap
+
+```{r co_map}
+renderLeaflet({
+  poke <- input$chosen_pokemon #coding drop down menu and pokemon selection
+
+  #Tells us which counties have the selected pokemon
+  highlight_names <- character(0)
+  if (!is.null(poke) && poke != "") {
+    highlight_names <- poke_by_county %>%
+      filter(pokemon == poke) %>%
+      pull(NAME) %>%
+      unique()
+  }
+
+  fill_vals <- ifelse(co_counties_map$NAME %in% highlight_names, #assigns colors to polygons
+                      "orange", "lightblue")
+  weight_vals <- ifelse(co_counties_map$NAME %in% highlight_names, 
+                        4, 1) #assigns border thickness to polygons
+
+  leaflet(co_counties_map) %>% #renders the map
+    addTiles() %>%
+    addPolygons(
+      label     = ~NAME,
+      fillColor = fill_vals,
+      fillOpacity = 0.6,
+      color     = "white", #assigns white borders to all counties
+      weight    = weight_vals #determines thickness of border
+    )
+})
+```
+
+Column {data-width=35}
+-----------------------------------------------------------------------
+
+### Pokémon & Counties
+
+```{r pokemon_selector}
+selectInput(
+  inputId  = "chosen_pokemon", 
+  label    = "Select a Pokemon:", #creates text above dropdown box
+  choices  = sort(unique(poke_by_county$pokemon)), #produces pokemon list in drop down menu
+  selected = sort(unique(poke_by_county$pokemon))[1]) #sets the default selection
+```
+
+```{r pokemon_image}
+renderUI({
+  poke <- input$chosen_pokemon #determines pokemon selected
+
+  pk_row <- poke_by_county %>% #pulls corresponding row of data
+    dplyr::filter(pokemon == poke) %>%
+    dplyr::slice(1)
+  
+#extracting fields needed for info panel
+  url <- pk_row$url_image[1]
+  eco <- pk_row$ecotone[1]
+  gen <- pk_row$generation_id[1]
+
+  types <- unique(na.omit(c(pk_row$type_1[1], pk_row$type_2[1]))) #formats pulled types
+  type_text <- if (length(types) == 0) {
+    "Type(s): unknown"
+  } else {
+    paste0("Type(s): ", paste(types, collapse = " / "))
+  }
+
+  gen_text <- paste0("Generation: ", gen) #pastes pokemon generation info
+
+  #builds visual UI bloc
+  tags$div(
+    tags$img(
+      src   = url,
+      style = "max-width: 100%; height: auto; display: block; margin-bottom: 4px;"
+    ),#modifying ecotone visuals
+    tags$p(
+      paste0("Ecotone: ", eco),
+      style = "font-weight: bold; margin-top: 0; margin-bottom: 2px;"
+    ),#modifying type visuals
+    tags$p(
+      type_text,
+      style = "margin-top: 0; margin-bottom: 2px;"
+    ),#modifying generation visuals
+    tags$p(
+      gen_text,
+      style = "margin-top: 0; margin-bottom: 10px;"
+    )
+  )
+})
+```
+
+
+```{r pokemon_table}
+renderText({
+  poke <- input$chosen_pokemon
+
+  counties <- poke_by_county %>%
+    filter(pokemon == poke) %>% #filtering to all rows for that pokemon
+    distinct(NAME) %>% #avoids duplicates
+    arrange(NAME) %>% #arranges list
+    pull(NAME) #pulls county name
+
+  #produces sentence structure
+  paste0("Present in these counties: ", paste(counties, collapse = ", "))
+})
+```
