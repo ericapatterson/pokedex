@@ -13,6 +13,7 @@ library(tidyverse)
 library(flexdashboard)
 library(shiny)
 library(magick)
+library(stringr)
 ```
 
 ```{r}
@@ -121,9 +122,9 @@ tagList(
   selectInput(
     "filter_pokemon",
     NULL,
-    choices = c("All"),
-    selected = "All"
-  ))
+    choices = c("All", sort(unique(pokemon_df$pokemon))),
+    selected = "All"))
+
 
 ```
 
@@ -172,6 +173,8 @@ pokemon_df %>%
 
 pokemon_df %>%
   filter(pokemon %in% c("vaporeon", "jolteon", "flareon")) %>%
+  
+  
   pull(url_image) %>%
   image_read() %>%
   image_scale("200") %>%     # <-- adjust width to fit flexboard
