@@ -1,5 +1,5 @@
----
-title: "Pokédex Explorer — Pokémon Evolution Module"
+--- 
+title: "Pokédex Explorer"
 output:
   flexdashboard::flex_dashboard:
     orientation: rows
@@ -12,305 +12,304 @@ runtime: shiny
 library(tidyverse)
 library(flexdashboard)
 library(shiny)
+library(leaflet)
+library(DT)
+library(sf)
 library(magick)
+library(stringr)
+library(htmltools)
+
+# Load Colorado ecotone data if available
+if (file.exists("poke_data.RData")) {
+  load("poke_data.RData")
+  co_counties_map <- co_counties_ecotones %>% st_transform(4326)
+
+  poke_by_county <- co_counties_map %>%
+    st_drop_geometry() %>%
+    select(NAME, ecotone) %>%
+    inner_join(pokemon_clean_df, by = "ecotone", relationship = "many-to-many")
+}
+
+# Load Pokémon dataset (Tidytuesday)
+tuesdata <- try(tidytuesdayR::tt_load(2025, week = 13), silent = TRUE)
+if (!inherits(tuesdata, "try-error")) {
+  pokemon_df <- tuesdata$pokemon_df
+} else {
+  pokemon_df <- readr::read_csv(
+    "https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2025/2025-04-01/pokemon_df.csv"
+  )
+}
+
+# Manual evolution chains (for display purposes)
+evo_lines <- list(
+  eevee      = c("eevee", "vaporeon", "jolteon", "flareon",
+                 "espeon", "umbreon", "leafeon", "glaceon", "sylveon"),
+  bulbasaur  = c("bulbasaur", "ivysaur", "venusaur"),
+  charmander = c("charmander", "charmeleon", "charizard"),
+  squirtle   = c("squirtle", "wartortle", "blastoise")
+  # Add more if want
+)
+
+# Choices for the stat dropdown
+stat_choices <- c(
+  "HP"               = "hp",
+  "Attack"           = "attack",
+  "Defense"          = "defense",
+  "Special Attack"   = "special_attack",
+  "Special Defense"  = "special_defense",
+  "Speed"            = "speed"
+)
 ```
 
-```{r}
-tuesdata <- tidytuesdayR::tt_load('2025-04-01')
-## OR
-tuesdata <- tidytuesdayR::tt_load(2025, week = 13)
+**Evolution Module**
 
-pokemon_df <- tuesdata$pokemon_df
+Explore a Pokémon’s stats, sprite, and full evolution line using the controls below.
 
-# Option 2: Read directly from GitHub
-
-pokemon_df <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2025/2025-04-01/pokemon_df.csv')
-
-```
-
-
-<style>
-/* Pokémon-themed module titles */
-.dex-title {
-  font-family: serif;
-  font-size: 118%;
-  font-weight: bold;
-  color: #3b2f23;
-  margin-bottom: 4px;
-}
-
-/* Warm-toned captions */
-.caption-warm {
-  font-style: italic;
-  color: #6a604d;
-  font-size: 90%;
-}
-
-/* Dashed field-guide separator */
-hr.field-sep {
-  border-top: 1px dashed #b8ad99;
-  margin-top: 8px;
-  margin-bottom: 8px;
-  opacity: 0.8;
-}
-
-/* Notes card look */
-.notes-card {
-  background-color: #faf7f0;
-  border: 1px solid #d5ccb8;
-  padding: 10px 12px;
-  border-radius: 6px;
-}
-
-/* Trainer control panel styling (tight, clean) */
-.trainer-panel {
-  background-color: #fdfaf4;
-  border: 1px solid #e0d4bd;
-  border-radius: 6px;
-  padding: 8px 10px;
-}
-
-/* Stat map panel styling with faint Pokéball ring (tight, clean) */
-.map-panel {
-  background: radial-gradient(circle at 30% 30%, rgba(229, 59, 59, 0.08) 0, rgba(229, 59, 59, 0.0) 55%),
-              #fefdf8;
-  border: 1px solid #e0d4bd;
-  border-radius: 6px;
-  padding: 8px 10px;
-}
-
-/* Pokédex-style labels for controls */
-.control-label {
-  font-weight: 600;
-  font-size: 88%;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: #3b2f23;
-  margin-top: 4px;
-  margin-bottom: 2px;
-}
-
-/* Reduce default margin on h3 section headers */
-.section.level3 > h3 {
-  margin-top: 4px;
-  margin-bottom: 4px;
-}
-</style>
-
-Evolution
-=====================================
-
-**Pokémon Evolution:** Explore pokémon evolution from unevolved to full power  
-<span class="caption-warm">A Pokédex-style visual compendium.</span>
-
-<hr class="field-sep">
-
-Row {data-height=180}
+Row {data-height=150}
 -------------------------------------
 
-### <span class="dex-title">Trainer Controls</span> {data-width=30}
-
-<div class="trainer-panel">
-
-<span class="caption-warm">select your pokémon of interest using the dropdown.</span>
+### Trainer Controls {data-width=30}
 
 ```{r}
+# Pokémon picker
+selectInput(
+  "filter_pokemon",
+  label   = "Choose a Pokémon:",
+  choices = sort(unique(pokemon_df$pokemon)),
+  selected = "eevee"
+)
 
-tagList(
-  div(class = "control-label", "Pokémon"),
-  selectInput(
-    "filter_pokemon",
-    NULL,
-    choices = c("All"),
-    selected = "All"
-  ))
-
-```
-
-</div>
-
-### <span class="dex-title">Pokémon Viewer</span> {data-width=60}
-
-```{r, }
-## add code to print photo based on drop-down selection
-## placeholder example:
-pokemon_df %>%
-  filter(pokemon == "eevee") %>%
-  pull(url_image) %>%       
-  image_read() 
-
-```
-
-
-Row {data-height=180}
--------------------------------------
-
-### <span class="dex-title">Pokémon Power</span> {data-width=30}
-
-<div class="trainer-panel">
-
-```{r}
-## add code forpower tracking graph
-# placeholder example
-
-pokemon_df %>%
-  filter(pokemon %in% c("eevee", "vaporeon", "jolteon", "flareon")) %>%
-  ggplot(aes(x = pokemon, y = hp, color = type_1)) +
-  geom_point() + 
-  labs(y = "Hit Points", color = "Power Type")
-
-```
-
-</div>
-
-### <span class="dex-title">Pokémon Evolution</span> {data-width=60}
-
-```{r}
-## add code to print evolution - note, this may be harder than initially thought..
-## doesn't seem to be a clean way to pull all stages of the pokemon evolution
-# placeholder example
-
-pokemon_df %>%
-  filter(pokemon %in% c("vaporeon", "jolteon", "flareon")) %>%
-  pull(url_image) %>%
-  image_read() %>%
-  image_scale("200") %>%     # <-- adjust width to fit flexboard
-  image_append()
-
-```
-
-
-Row {data-height=60}
--------------------------------------
-
-### <span class="dex-title">Pokédex Field Notes</span> 🦦
-
-<div class="notes-card">
-
-**Design Notes (Erica):**
-
-- This is the layout for the Pokémon evolution page of our Pokédex dashboard.  
-- Maintained a consistent theme with the Stat and Mapping interface created by Melanie
-- The "Trainer Controls" allows the user to select a specific pokemon
-- The selected pokémon is then displayed in the Pokemon viewer
-- The Pokémon Evolution panel is for dsiplaying each evolved iteration of the selected Pokémon.
-- The Pokémon Power panel shows the hit points for each pokémon, colored by power type 
-- Kyle and Tayin will replace the placeholder plots and code with the real visualizations.  
-- The `journal` theme plus custom styling blend a naturalist field-guide feel with a modern Pokédex interface.
-
-</div>
-
-Explorer
-=====================================
-
-**Stat Explorer Module:** Visualizing how Pokémon stats relate to each other.  
-<span class="caption-warm">A Pokédex-style analytical view of stat relationships.</span>
-
-<hr class="field-sep">
-
-Row {data-height=120}
--------------------------------------
-
-### <span class="dex-title">Module 01 — Trainer Controls</span> {data-width=30}
-
-<div class="trainer-panel">
-
-<span class="caption-warm">Use these settings to customize your stat exploration as a trainer.</span>
-
-```{r}
-# Controls for map page — real data will be linked later
-
-tagList(
-  div(class = "control-label", "Primary Type Filter"),
-  selectInput(
-    "filter_type",
-    NULL,
-    choices = c("All"),
-    selected = "All"
-  ),
-  div(class = "control-label", "Generation Filter"),
-  selectInput(
-    "filter_gen",
-    NULL,
-    choices = c("All"),
-    selected = "All"
-  ),
-  div(class = "control-label", "X-Axis Stat"),
-  selectInput(
-    "x_stat",
-    NULL,
+# Wrap the stat radio buttons in a scrollable container
+div(
+  style = "
+    max-height: 120px;
+    overflow-y: auto;
+    padding-right: 5px;
+    margin-top: 5px;
+  ",
+  radioButtons(
+    "power_stat",
+    label = "Choose a stat to visualize:",
     choices = c(
-      "HP" = "hp",
-      "Attack" = "attack",
-      "Defense" = "defense",
-      "Special Attack" = "special_attack",
-      "Special Defense" = "special_defense",
-      "Speed" = "speed"
+      "HP"               = "hp",
+      "Attack"           = "attack",
+      "Defense"          = "defense",
+      "Special Attack"   = "special_attack",
+      "Special Defense"  = "special_defense",
+      "Speed"            = "speed"
     ),
-    selected = "attack"
-  ),
-  div(class = "control-label", "Y-Axis Stat"),
-  selectInput(
-    "y_stat",
-    NULL,
-    choices = c(
-      "HP" = "hp",
-      "Attack" = "attack",
-      "Defense" = "defense",
-      "Special Attack" = "special_attack",
-      "Special Defense" = "special_defense",
-      "Speed" = "speed"
-    ),
-    selected = "defense"
+    selected = "hp"
   )
 )
 ```
 
-
-</div>
-
-### <span class="dex-title">Module 02 — Stat Mapping Interface</span> {data-width=70}
-
-<div class="map-panel">
-
-<span class="caption-warm">Adjust filters and stat axes to visualize how different Pokémon are positioned in stat space.</span>
+### Pokémon Sprite Viewer {data-width=70}
 
 ```{r}
-# Placeholder plot — safe and error-free
-renderPlot({
-  ggplot2::ggplot(data.frame(x = 0, y = 0), ggplot2::aes(x, y)) +
-    ggplot2::geom_point(alpha = 0) +
-    ggplot2::labs(title = "Pokémon Stat Map") +
-    ggplot2::theme_void()
+renderUI({
+  selected <- input$filter_pokemon
+  req(selected)
+
+  url <- pokemon_df %>%
+    dplyr::filter(pokemon == selected) %>%
+    dplyr::pull(url_image) %>% .[1]
+
+  if (is.na(url)) {
+    return("No image available.")
+  }
+
+  div(
+    style = "
+      height: 200px;
+      overflow-y: auto;
+      overflow-x: auto;
+      padding: 5px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    ",
+    tags$img(
+      src = url,
+      style = "
+        max-height: 120px;
+        max-width: 80%;
+        height: auto;
+        width: auto;
+        object-fit: contain;
+      "
+    )
+  )
 })
 ```
 
-</div>
-
-Row
+Row {data-height=180}
 -------------------------------------
 
-<hr class="field-sep">
+### Evolution Stat Comparison {data-width=30}
 
-### <span class="dex-title">Pokédex Field Notes</span> 🌿
+```{r}
+renderPlot({
+selected <- input$filter_pokemon
+stat_col <- input$power_stat
+req(selected, stat_col)
 
-<div class="notes-card">
+# Use same evolution chain as the evolution images
 
-**Design Notes (Melanie):**
+evo_vec <- evo_lines[[tolower(selected)]]
+if (is.null(evo_vec)) {
+evo_vec <- selected
+}
 
-- This is the layout for the Stat Map page of our Pokédex dashboard.  
-- “Trainer Controls” and “Stat Mapping Interface” use Pokédex-style wording to match the theme.  
-- The trainer panel groups all interactive controls in one place for a clean, guided experience.  
-- The stat map panel uses a faint Pokéball ring effect and warm tones to keep the aesthetic subtle but thematic.  
-- When the user changes the selected stats or filters, the coded version of this page will update the visualization in the map panel.  
-- Kyle and Tayin will replace the placeholder plot with the real stat visualizations.  
-- The `journal` theme plus custom styling blend a naturalist field-guide feel with a modern Pokédex interface.
+evo_group <- pokemon_df %>%
+dplyr::filter(pokemon %in% evo_vec)
 
-</div>
+validate(
+need(nrow(evo_group) > 0, "No evolution stats available for this Pokémon.")
+)
 
+# Friendly label for the axis/title
 
+stat_labels <- c(
+hp              = "HP",
+attack          = "Attack",
+defense         = "Defense",
+special_attack  = "Special Attack",
+special_defense = "Special Defense",
+speed           = "Speed"
+)
 
+y_lab <- if (stat_col %in% names(stat_labels)) stat_labels[stat_col] else stat_col
 
+ggplot(
+evo_group,
+aes(
+x    = get(stat_col),  # no .data pronoun needed
+y    = factor(pokemon, levels = rev(evo_vec)),
+fill = type_1
+)
+) +
+geom_col() +
+coord_flip() +
+theme_minimal() +
+labs(
+title = paste(selected, "Evolution", y_lab, "Stats"),
+x     = y_lab,
+y     = "Pokémon"
+)
+})
+```
 
+### Evolution Line {data-width=70}
 
+```{r}
+renderUI({
+  selected <- input$filter_pokemon
+  req(selected)
 
+  # Look up evolution chain; if none, use just the selected Pokémon
+  evo_vec <- evo_lines[[tolower(selected)]]
+  if (is.null(evo_vec)) {
+    evo_vec <- selected
+  }
+
+  urls <- pokemon_df %>%
+    filter(pokemon %in% evo_vec) %>%
+    arrange(match(pokemon, evo_vec)) %>%
+    pull(url_image) %>%
+    unique() %>%
+    na.omit()
+
+  if (length(urls) == 0) {
+    return(tags$p("No evolution images available.", style = "color:#444;"))
+  }
+
+  div(
+    style = "
+      height: 200px;
+      overflow-y: auto;
+      overflow-x: auto;
+      padding: 5px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    ",
+    lapply(urls, function(u) {
+      tags$img(
+        src = u,
+        style = "
+          max-height: 120px;
+          width: auto;
+          object-fit: contain;
+        "
+      )
+    })
+  )
+})
+```
+
+============================================================  
+# **Colorado PokéMap Module**
+============================================================
+
+Row {data-height=300}
+-------------------------------------
+
+### Colorado PokéMap {data-width=65}
+
+View where each Pokémon appears across Colorado’s ecotones. Select a Pokémon on the right to highlight its counties and view its ecotone, type, and generation.
+
+```{r}
+if (!exists("co_counties_map")) {
+  renderLeaflet({ leaflet() })
+} else {
+  renderLeaflet({
+    poke <- input$chosen_pokemon
+
+    highlight <- poke_by_county %>%
+      filter(pokemon == poke) %>%
+      pull(NAME)
+
+    fill <- ifelse(co_counties_map$NAME %in% highlight, "orange", "lightblue")
+
+    leaflet(co_counties_map) %>%
+      addTiles() %>%
+      addPolygons(
+        label = ~NAME,
+        fillColor = fill,
+        fillOpacity = 0.6,
+        color = "white",
+        weight = ifelse(co_counties_map$NAME %in% highlight, 4, 1)
+      )
+  })
+}
+```
+
+### Pokémon Details {data-width=35}
+
+```{r}
+if (exists("poke_by_county")) {
+  selectInput(
+    "chosen_pokemon",
+    "Select a Pokémon:",
+    choices = sort(unique(poke_by_county$pokemon))
+  )
+}
+```
+
+```{r}
+renderUI({
+  req(input$chosen_pokemon)
+
+  if (!exists("poke_by_county"))
+    return("Colorado dataset unavailable.")
+
+  row <- poke_by_county %>% filter(pokemon == input$chosen_pokemon) %>% slice(1)
+
+  tags$div(
+    tags$img(src = row$url_image[1], style="max-width:150px;"),
+    tags$p(paste("Ecotone:", row$ecotone)),
+    tags$p(paste("Type:", row$type_1)),
+    tags$p(paste("Generation:", row$generation_id))
+  )
+})
+```
