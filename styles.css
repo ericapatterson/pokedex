@@ -1,0 +1,366 @@
+/* =========================================================
+   GLOBAL
+========================================================= */
+
+body {
+  background-color: #f7f7f7;
+  font-family: "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Section titles: PokéStats, PokéMap */
+.section h1 {
+  font-size: 36px !important;
+  font-weight: 800;
+  color: #c00000;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+}
+
+/* Subtitles: Trainer Controls, Evolution Line, etc. */
+.section h3 {
+  font-size: 24px !important;
+  font-weight: 700;
+  color: #333333;
+}
+
+/* Normal paragraph text */
+.section p {
+  font-size: 18px;
+  line-height: 1.5;
+  color: #444444;
+}
+
+/* =========================================================
+   NAVBAR
+========================================================= */
+
+.navbar {
+  background-color: #ef5350 !important;
+  border: none;
+}
+
+.navbar-brand {
+  font-size: 30px !important;
+  font-weight: 800;
+  color: #ffffff !important;
+}
+
+.navbar-nav > li > a {
+  font-size: 18px;
+  font-weight: 600;
+  color: #ffecec !important;
+}
+
+.navbar-nav > .active > a,
+.navbar-nav > .active > a:focus,
+.navbar-nav > .active > a:hover {
+  background-color: #ffffff !important;
+  color: #c00000 !important;
+  border-radius: 20px 20px 0 0;
+}
+
+.navbar-nav > li > a:hover {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+/* =========================================================
+   FLEXDASHBOARD PANELS
+========================================================= */
+
+.chart-stage {
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.06);
+}
+
+.chart-title,
+.pokedex-panel-title {
+  font-weight: 700;
+  font-size: 18px;
+  color: #c00000;
+  margin: 0 0 10px 0;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #dddddd;
+}
+
+/* Fix: allow tall content (like the holo card) to not get clipped */
+.section .chart-stage,
+.section .chart-wrapper,
+.section .chart-stage-flex,
+.section .html-widget,
+.section .shiny-html-output {
+  overflow: visible !important;
+}
+
+/* If flexdashboard is still forcing a fixed height, allow scroll inside the panel */
+.section .chart-stage {
+  overflow-y: auto !important;
+}
+
+/* =========================================================
+   FORMS
+========================================================= */
+
+.form-control {
+  border-radius: 999px;
+  border: 2px solid #ef5350;
+}
+
+.radio label,
+.control-label {
+  font-weight: 600;
+}
+
+.radio {
+  margin-bottom: 5px;
+}
+
+/* =========================================================
+   EVOLUTION LINE
+========================================================= */
+
+.evolution-line-container {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 10px;
+}
+
+.evolution-line-container img {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border-radius: 12px;
+}
+
+.evolution-line-container img:hover {
+  transform: translateY(-4px) scale(1.04);
+  box-shadow: 0 0 18px rgba(255, 203, 5, 0.8);
+}
+
+/* =========================================================
+   LEAFLET MAP
+========================================================= */
+
+.leaflet-container {
+  border-radius: 16px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+}
+
+/* =========================================================
+   POKEDEX INTRO CARD
+========================================================= */
+
+.pokedex-card {
+  background-color: #ffffff;
+  border-radius: 18px;
+  border: 3px solid #c00000;
+  padding: 14px 18px 12px 18px;
+  margin: 2px 0 16px 0;
+  position: relative;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  color: #333333;
+  font-size: 19px;
+  font-weight: 500;
+  box-sizing: border-box;
+}
+
+.pokedex-card p {
+  margin-bottom: 0;
+}
+
+.pokedex-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 10px;
+  border-radius: 14px 14px 0 0;
+  background: linear-gradient(90deg, #ef5350, #c00000);
+}
+
+.pokedex-card::after {
+  content: "";
+  position: absolute;
+  top: 6px;
+  right: 18px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #ffffff 0, #ffffff 40%, #ffcb05 41%, #ffcb05 100%);
+  box-shadow: 0 0 0 3px #333333;
+}
+
+/* =========================================================
+   POKÉMON SPRITE CARD (MAIN)
+========================================================= */
+
+.pokemon-card {
+  background: linear-gradient(180deg, #ffffff 0%, #f8f8f8 100%);
+  border-radius: 20px;
+  border: 3px solid #c00000;
+  padding: 18px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+  position: relative;
+
+  max-width: 700px;
+  margin: 14px auto;
+}
+
+/* layout inside card */
+.pokemon-card-inner {
+  display: flex;
+  align-items: center;   /* ← change from flex-start */
+  justify-content: center;
+  gap: 24px;
+}
+
+/* sprite image */
+.pokemon-card-img {
+  max-width: 260px;
+  height: auto;
+  display: block;
+  margin-bottom: 6px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+/* hover glow */
+.pokemon-card:hover .pokemon-card-img {
+  transform: scale(1.05);
+  box-shadow: 0 0 28px rgba(255, 203, 5, 0.6);
+}
+
+/* right-side info */
+.pokemon-card-info {
+  max-width: 320px;
+  font-size: 13px;
+  line-height: 1.35;
+  text-align: left;
+}
+
+/* name */
+.pokemon-card-name {
+  font-size: 18px;
+  font-weight: 800;
+  color: #111;
+  margin-bottom: 8px;
+}
+
+/* clean stat list */
+.pokemon-card-list {
+  list-style: none;
+  padding-left: 0;
+  margin: 8px 0 0 0;
+}
+
+.pokemon-card-list li {
+  margin: 2px 0;
+}
+
+.pokemon-card hr {
+  margin: 10px 0;
+  border: 0;
+  border-top: 1px solid #e6e6e6;
+}
+
+/* =========================================================
+   LINKS
+========================================================= */
+
+a,
+a:hover,
+a:focus {
+  color: #ffcb05;
+}
+
+/* =========================================================
+   HOLO / FOIL EFFECT (Sprite Card) — SUBTLE WORKING VERSION
+========================================================= */
+
+.pokemon-card{
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.pokemon-card {
+  box-shadow:
+    0 6px 16px rgba(0,0,0,0.12),
+    inset 0 0 0 1px rgba(255,255,255,0.4);
+}
+
+/* Keep real content above foil */
+.pokemon-card-inner,
+.pokemon-card-img,
+.pokemon-card-info{
+  position: relative;
+  z-index: 3;
+}
+
+/* Rainbow foil layer (softer + thinner stripes) */
+.pokemon-card::after{
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+
+  background:
+    repeating-linear-gradient(
+      135deg,
+      rgba(255, 0, 140, 0.18) 0px,
+      rgba(255, 0, 140, 0.18) 12px,
+      rgba(0, 220, 255, 0.14) 12px,
+      rgba(0, 220, 255, 0.14) 24px,
+      rgba(255, 203, 5, 0.14) 24px,
+      rgba(255, 203, 5, 0.14) 36px,
+      rgba(0, 255, 140, 0.12) 36px,
+      rgba(0, 255, 140, 0.12) 48px
+    );
+
+  opacity: 0.18;                 /* softer at rest */
+  transform: rotate(-8deg) scale(1.2);
+  transition: opacity 0.25s ease;
+}
+
+/* Moving “sheen” sweep (less overpowering) */
+.pokemon-card::before{
+  content: "";
+  position: absolute;
+  inset: -60%;
+  z-index: 2;
+  pointer-events: none;
+
+  background: linear-gradient(
+    115deg,
+    rgba(255,255,255,0) 42%,
+    rgba(255,255,255,0.85) 50%,
+    rgba(255,255,255,0) 58%
+  );
+
+  transform: translateX(-55%) rotate(12deg);
+  opacity: 0.08;                 /* softer at rest */
+  transition: opacity 0.25s ease, transform 0.8s ease;
+}
+
+.pokemon-card:hover::after{
+  opacity: 0.40;                 /* softer on hover */
+  animation: holoShift 2.2s linear infinite;
+}
+
+.pokemon-card:hover::before{
+  opacity: 0.55;                 /* softer on hover */
+  transform: translateX(55%) rotate(12deg);
+}
+
+@keyframes holoShift{
+  0%   { filter: hue-rotate(0deg); }
+  50%  { filter: hue-rotate(90deg); }
+  100% { filter: hue-rotate(180deg); }
+}
+
+.pokemon-card-info{
+  background: rgba(255,255,255,0.65);
+  border-radius: 12px;
+  padding: 10px 12px;
+}
