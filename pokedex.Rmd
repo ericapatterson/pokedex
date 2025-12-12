@@ -395,7 +395,7 @@ if (exists("poke_by_county")) {
     "chosen_pokemon",
     "Select a Pokémon:",
     choices = sort(unique(poke_by_county$pokemon)),
-    selected = "eevee"
+    selected = "Eevee"
   )
 }
 ```
