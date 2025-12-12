@@ -1,16 +1,15 @@
----
+--- 
 title: "Pokédex Explorer"
 output:
   flexdashboard::flex_dashboard:
     vertical_layout: fill
     theme: journal
 runtime: shiny
-css: styles.css
 ---
+
 
 PokéStats 
 =====================================
-
 ```{r setup, include=FALSE}
 library(tidyverse)
 library(flexdashboard)
@@ -32,11 +31,11 @@ if (file.exists("poke_data.RData")) {
   poke_by_county <- co_counties_map %>%
     st_drop_geometry() %>%
     select(NAME, ecotone) %>%
-    inner_join(pokemon_clean_df, by = "ecotone", relationship = "many-to-many")
-}
+    inner_join(pokemon_clean_df, by = "ecotone", relationship = "many-to-many")}
 ```
 
 ```{r}
+
 # Load and transform pokemon_df
 
 pokemon_df <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2025/2025-04-01/pokemon_df.csv')
@@ -46,7 +45,7 @@ pokemon_evolution <- readxl::read_excel("pokemon_evolution.xlsx")
 # Capitalize pokemon names 
 pokemon_df$pokemon <- str_to_title(pokemon_df$pokemon)
 
-# Filter pokemon_df to pokemon_evolution list and combine all evolution-related names into one character vector
+#Filter pokemon_df to pokemon_evolution list and Combine all evolution-related names into one character vector
 evo_names <- pokemon_evolution %>%
   select(unevolved, evolution_one, evolution_two) %>%
   unlist(use.names = FALSE) %>%
@@ -62,27 +61,24 @@ evo_long <- pokemon_evolution %>%
   pivot_longer(
     cols = c(unevolved, evolution_one, evolution_two),
     names_to = "Stage",
-    values_to = "Pokemon"
-  ) %>% 
-  mutate(
-    Evolution_stage = case_when(
-      Stage == "unevolved"     ~ 0L,
-      Stage == "evolution_one" ~ 1L,
-      Stage == "evolution_two" ~ 2L
-    )
-  ) %>%
+    values_to = "Pokemon") %>% 
+mutate(Evolution_stage = case_when(
+  Stage == "unevolved" ~ 0L,
+  Stage == "evolution_one" ~ 1L,
+  Stage == "evolution_two" ~ 2L)) %>%
   drop_na() %>% 
   select(Pokemon, Base_pokemon, Evolution_stage) 
 
 # Merge the evolution reference to pokemon_df
 pokemon_df <- pokemon_df %>%
   left_join(evo_long %>% select(Pokemon, Base_pokemon, Evolution_stage),
-            by = c("pokemon" = "Pokemon"))
+    by = c("pokemon" = "Pokemon"))
 
-# Re-order columns in pokemon_df and remove duplicated rows
+#Re-order columns in pokemon_df and remove duplciated rows
 pokemon_df <- pokemon_df %>%
   select(pokemon, Evolution_stage, Base_pokemon, everything()) %>% 
-  distinct(pokemon, .keep_all = TRUE)
+  distinct(pokemon, .keep_all =  TRUE)
+  
 
 # Choices for the stat dropdown
 stat_choices <- c(
@@ -91,21 +87,15 @@ stat_choices <- c(
   "Defense"          = "defense",
   "Special Attack"   = "special_attack",
   "Special Defense"  = "special_defense",
-  "Speed"            = "speed"
-)
+  "Speed"            = "speed")
 ```
 
-<div class="pokedex-panel-title">Evolution Module</div>
-
-<div class="pokedex-card">
+**Evolution Module**
 Explore a Pokémon’s stats, sprite, and full evolution line using the controls below.
-</div>
 
 Column {data-width=30}
 -------------------------------------
-
-### Trainer Controls {data-width=30, data-height=400}
-
+### Trainer Controls {data-width=40}
 ```{r}
 # Pokémon picker
 tagList(
@@ -114,29 +104,42 @@ tagList(
     "filter_pokemon",
     NULL,
     choices = c(sort(unique(pokemon_df$pokemon))),
-    selected = "Eevee"
-  )
-)
+    selected = "Eevee"))
 
 
 # Wrap the stat radio buttons in a scrollable container
 div(
   style = "
-    max-height: 200px;
+    max-height: 150px;
     overflow-y: auto;
+    overflox-x: hidden;
     padding-right: 5px;
     margin-top: 5px;
   ",
+
+    tags$style(HTML("
+      .radio, .radio label {
+        margin-bottom: 4px !important;
+        line-height: 1.1 !important;
+        font-size: 13px !important;
+        white-space: normal !important;
+      }
+  ")),
+  
   radioButtons(
     "power_stat",
     label = "Choose a stat to visualize:",
-    choices = stat_choices,
-    selected = "hp"
-  )
-)
+    choices = c(
+      "HP"               = "hp",
+      "Attack"           = "attack",
+      "Defense"          = "defense",
+      "Special Attack"   = "special_attack",
+      "Special Defense"  = "special_defense",
+      "Speed"            = "speed"),
+    selected = "hp"))
 ```
 
-### Evolution Stat Comparison {data-width=30}
+### Evolution Stat Comparison {data-width=40}
 
 ```{r}
 renderPlot({
@@ -201,84 +204,101 @@ y_lab <- stat_labels[[stat_col]]
 
 Column {data-width=70}
 -------------------------------------
-
-### Pokémon Sprite Viewer {data-width=70, data-height=750}
-
+### Pokémon Sprite Viewer {data-width=60, data-height=700}
 ```{r}
 renderUI({
   selected <- input$filter_pokemon
   req(selected)
 
-  poke <- pokemon_df %>%
+  poke <- pokemon_df %>% 
+    filter(pokemon == selected) %>% 
+    slice(1)
+  
+  url <- pokemon_df %>%
     dplyr::filter(pokemon == selected) %>%
-    dplyr::slice(1)
+    dplyr::pull(url_image) %>% .[1]
 
-  url <- poke$url_image[1]
-
-  if (is.na(url) || url == "") {
+  if (is.na(url)) {
     return("No image available.")
   }
 
-  # OUTER CENTERING WRAPPER  ✅ add class = "sprite-panel"
   div(
-    class = "sprite-panel",
-    style = "width:100%; display:flex; justify-content:center;
-               overflow-y: auto;
+     style = "
+      height: 100%;
+      width: 100%;
+      padding: 10px;
+      display: flex;
+      flex-direction: row;
+      align-items: stretch;
+      gap: 20px; 
+      overflow: auto;
+      
     ",
+    
+  # --- Left: image ---
+    tags$img(
+      src = url,
+      style = "
+        height: 100%;
+        width: auto;
+        object-fit: contain;
+        display: block;
+        magin-bottom: 20px;
+        flex-shrink: 0;
+      "
+    ),
+  # --- Right: info panel ---
+  div(
+      style = "
+       width: 350px; 
+       padding: 15px;
+       border: 1px solid #ddd;
+       border-radius: 8px;
+       background: #f9f9f9;
+       font-size: 14px;
+       line-height: 1.4;
+       overflow-y: auto;
+      ",
 
-    # ACTUAL CARD
-    div(
-      class = "pokemon-card",
+      h4(selected, 
+        style = "
+          text-align: center;
+          margin-top: 0;
+          white-space: normal; 
+          word-wrap: break-word;"),
 
-      # CARD INNER LAYOUT
-      div(
-        class = "pokemon-card-inner",
+      tags$ul(
+        style = "list-style-type: none; padding-left: 0;",
 
-        # LEFT: IMAGE
-        tags$img(
-          src = url,
-          alt = selected,
-          class = "pokemon-card-img"
-        ),
-
-        # RIGHT: INFO PANEL
-        div(
-          class = "pokemon-card-info",
-
-          tags$h4(selected, class = "pokemon-card-name"),
-
-          tags$ul(
-            class = "pokemon-card-list",
-
-            tags$li(paste("Height (m):", poke$height)),
-            tags$li(paste("Weight (kg):", poke$weight)),
-            tags$li(paste("Primary type:", poke$type_1)),
-            tags$li(paste("Secondary type:", poke$type_2)),
-            tags$hr(),
-
-            tags$li(paste("Base experience:", poke$base_experience)),
-            tags$li(paste("HP:", poke$hp)),
-            tags$li(paste("Attack:", poke$attack)),
-            tags$li(paste("Defense:", poke$defense)),
-            tags$li(paste("Special Attack:", poke$special_attack)),
-            tags$li(paste("Special Defense:", poke$special_defense)),
-            tags$li(paste("Speed:", poke$speed)),
-            tags$hr(),
-
-            tags$li(paste("Base Pokémon:", poke$Base_pokemon)),
-            tags$li(paste("Evolution stage:", poke$Evolution_stage)),
-            tags$li(paste("Egg group:", poke$egg_group_1)),
-            tags$li(paste("Pokémon Generation:", poke$generation_id))
-          )
-        )
+        tags$li(paste("Height (m):", poke$height)),
+        tags$li(paste("Weight (kg):", poke$weight)),
+        tags$li(paste("Primary type:", poke$type_1)),
+        tags$li(paste("Secondary type:", poke$type_2)),
+        
+        #inserts visible divider line
+        tags$hr(), 
+        
+        tags$li(paste("Base experience:", poke$base_experience)),
+        tags$li(paste("HP:", poke$hp)),
+        tags$li(paste("Attack:", poke$attack)),
+        tags$li(paste("Defense:", poke$defense)),
+        tags$li(paste("Special Attack:", poke$special_attack)),
+        tags$li(paste("Special Defense:", poke$special_defense)),
+        tags$li(paste("Speed:", poke$speed)),
+        
+        tags$hr(),
+        
+        tags$li(paste("Base Pokémon:", poke$Base_pokemon)),
+        tags$li(paste("Evolution stage:", poke$Evolution_stage)),
+        tags$li(paste("Egg group:", poke$egg_group_1)),
+        tags$li(paste("Pokémon Generation:", poke$generation_id)),
       )
     )
   )
 })
 ```
 
-### Evolution Line {data-width=70}
-
+### Evolution Line {data-width=60}
 ```{r}
 renderUI({
   selected <- input$filter_pokemon
@@ -294,41 +314,49 @@ renderUI({
     filter(Base_pokemon == base_name) %>%
     arrange(Evolution_stage)   # ensures proper order
 
-  if (nrow(evo_df) == 0) {
+  urls <- evo_df$url_image %>%
+    unique() %>%
+    na.omit()
+
+  if (length(urls) == 0) {
     return(tags$p("No evolution images available.", style = "color:#444;"))
   }
 
+  # Display evolution images 
+
   div(
-    class = "evolution-line-container",
     style = "
-      height: 300px;
-      overflow-y: auto;
+      height: 220px;
       overflow-x: auto;
-      padding: 5px;
+      overflow-y: hidden;
+      padding: 10px 5px;
+      
       display: flex;
-      gap: 10px;
-      align-items: flex-start;
+      flex-direction: row;
+      align-items: center; 
+      gap: 20px;
     ",
-    lapply(seq_len(nrow(evo_df)), function(i) {
-      tags$div(
-        style = "
-          display: inline-block;
-          vertical-align: top;
-          width: 150px;
-          margin: 15px;
-          text-align: center;
-        ",
-        # Pokémon image
-        tags$img(
-          src = evo_df$url_image[i],
+    
+   lapply(seq_len(nrow(evo_df)), function(i) {
+        tags$div(
           style = "
-            max-height: 150px;
-            width: 150px;
-            object-fit: contain;
-            display: block;
-            margin: 0 auto;
-          "
-        ),
+              flex: 0 0 auto;
+              width: 150px;
+              text-align: center;
+          ",
+      
+        # Pokémon image
+       tags$img(
+            src = evo_df$url_image[i],
+            style = "
+              height: 150px;
+              width: auto;
+              object-fit: contain;
+              display: block;
+              margin: 0 auto;
+            "
+          ),
+       
         # Pokémon name
         tags$p(
           evo_df$pokemon[i],
@@ -354,9 +382,7 @@ Column {data-width=65}
 
 ### Colorado PokéMap {data-width=65}
 
-<div class="pokedex-card">
 View where each Pokémon appears across Colorado’s ecotones. Select a Pokémon on the right to highlight its counties and view its ecotone, type, and generation.
-</div>
 
 ```{r}
 if (!exists("co_counties_map")) {
@@ -382,6 +408,7 @@ if (!exists("co_counties_map")) {
       )
   })
 }
+
 ```
 
 Column {data-width=35}
@@ -394,7 +421,8 @@ if (exists("poke_by_county")) {
   selectInput(
     "chosen_pokemon",
     "Select a Pokémon:",
-    choices = sort(unique(poke_by_county$pokemon))
+    choices = sort(unique(poke_by_county$pokemon)),
+    selected = "Eevee"
   )
 }
 ```
@@ -416,34 +444,3 @@ renderUI({
   )
 })
 ```
-
-
-About 
-=====================================
-
-<div class="pokedex-card">
-Welcome Trainers! 
-
-
-
-This Pokédex is designed to give you all the information you need as look for, catch and train your Pokémon for the Colorado Tournament of Champions. 
-This tournament features challenges and obstacles that will take you through every ecosystem of Colorado and will require a team of Pokémon with diverse strengths and skills. Each Trainer may assemble up to 9 Pokémon to compete; we suggest a representative from each Colorado ecotone (Urban, Forest, Mountain, Agriculture, Water, Grassland, Riparian, Sand Dunes, and Steppe). Together, you and your Pokémon will compete in a melee-style Battle Royale against other teams and the elements in an arena designed to mimic the harshest challenges Colorado has to offer. 
-
-
-As you set out to build your team, use our interactive map to track down Pokémon in each Colorado ecotone. To do so, select a Pokémon from the dropdown menu on the right side of the Pokémap portal. An image of your selection will be displayed along with its Ecotone, Type, and Generation. On the left, the map of Colorado will display the counties in which your select Pokémon may be found. 
-Before trekking into the wilds (or urban areas) of Colorado to catch your Pokémon, read up on its stats and potential in the PokéStats portal. Here, again, you may select your Pokémon from the dropdown menu. An image of the selected Pokémon will be displayed along with detailed metrics on its natural history including size, powers, and evolution stage. Below the main image panel, images of all the variations in its evolutionary line will appear so you’ll know what’s in store should your Pokémon evolve. A final feature allows you to compare the power stats (HP, Defense, Attack, Special Defense, Special Attack and Speed) of the selected Pokémon to those in its evolution line. To do so, simply select the stat of interest from the left-hand panel of the portal, and see it visualized in the graphic beneath. 
-
-
-We wish you luck, and we will see you on the battlefield.
-
-
-Gotta catch ‘em all
-
-Sincerely 
-PokéTeam 535
-
-Data Source:
-TidyTudesday :Pokemon images, stats, life history
-Pokemon Evolution: evolution stage
-Kyles Ruszkowski: (ecotones of Colorado + the Pokemon that live there). 
-</div>
