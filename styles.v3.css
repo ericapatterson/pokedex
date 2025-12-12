@@ -1,0 +1,193 @@
+/* ===== GLOBAL ===== */
+
+body {
+  background-color: #f7f7f7;
+  font-family: "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Section titles: PokéStats, PokéMap */
+.section h1 {
+  font-size: 36px !important;
+  font-weight: 800;
+  color: #c00000;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+}
+
+/* Section-level h2 (e.g., Evolution Module) */
+.section h2 {
+  font-size: 30px !important;
+  font-weight: 800;
+  color: #c00000;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 6px;
+  margin-bottom: 10px;
+  border-bottom: 4px solid #c00000;
+  padding-bottom: 4px;
+}
+
+/* Subtitles: Trainer Controls, Evolution Line, etc. */
+.section h3 {
+  font-size: 24px !important;
+  font-weight: 700;
+  color: #333333;
+}
+
+/* Normal paragraph text */
+.section p {
+  font-size: 18px;
+  line-height: 1.5;
+  color: #444444;
+}
+
+/* ===== NAVBAR (top bar) ===== */
+
+.navbar {
+  background-color: #ef5350 !important; /* Pokémon red */
+  border: none;
+}
+
+.navbar-brand {
+  font-size: 30px !important;
+  font-weight: 800;
+  color: #ffffff !important;
+}
+
+/* Tabs: PokéStats / PokéMap */
+.navbar-nav > li > a {
+  font-size: 18px;
+  font-weight: 600;
+  color: #ffecec !important;
+}
+
+/* Active tab */
+.navbar-nav > .active > a,
+.navbar-nav > .active > a:focus,
+.navbar-nav > .active > a:hover {
+  background-color: #ffffff !important;
+  color: #c00000 !important;
+  border-radius: 20px 20px 0 0;
+}
+
+/* Hover state */
+.navbar-nav > li > a:hover {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+/* ===== CARDS / PANELS ===== */
+
+/* The white “card” look around chart/map areas */
+.chart-stage {
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.06);
+}
+
+/* Title strip above charts */
+.chart-title {
+  font-weight: 700;
+  font-size: 18px;
+  color: #c00000;
+}
+
+/* ===== FORMS: dropdowns, radio buttons, etc. ===== */
+
+.form-control {
+  border-radius: 999px;
+  border: 2px solid #ef5350;
+}
+
+.radio label,
+.control-label {
+  font-weight: 600;
+}
+
+/* Radio buttons spacing */
+.radio {
+  margin-bottom: 5px;
+}
+
+/* ===== IMAGES / SPRITES ===== */
+
+.section img {
+  image-rendering: auto;
+}
+
+/* Evolution line strip */
+.evolution-line-container {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 10px;
+}
+
+/* ===== LEAFLET MAP ===== */
+
+.leaflet-container {
+  border-radius: 16px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+}
+
+/* ===== POKEDEX INFO CARD (tighter & centered) ===== */
+
+.pokedex-card {
+  background-color: #ffffff;
+  border-radius: 16px;
+  border: 3px solid #c00000;
+  padding: 10px 14px 10px 14px;   /* tight padding */
+  margin: 10px 0 14px 0;          /* LEFT aligned, no auto centering */
+  position: relative;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.06);
+  color: #333333;
+  font-size: 18px;
+  font-weight: 500;
+  max-width: 900px;               /* not huge, but wider than before */
+  box-sizing: border-box;
+}
+
+/* Red Pokédex top bar */
+.pokedex-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  border-radius: 12px 12px 0 0;
+  background: linear-gradient(90deg, #ef5350, #c00000);
+}
+
+/* Small Pokéball accent */
+.pokedex-card::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  right: 12px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #ffffff 0, #ffffff 40%, #ffcb05 41%, #ffcb05 100%);
+  box-shadow: 0 0 0 2px #333333;
+}
+
+/* Pokémon Details specific tweaks */
+.pokedex-details {
+  text-align: center;
+  max-width: 100%;               /* let details card fill its column */
+  margin-top: 20px;
+}
+
+.pokedex-details p {
+  margin: 4px 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* Links with Pikachu yellow accent */
+a,
+a:hover,
+a:focus {
+  color: #ffcb05;
+}

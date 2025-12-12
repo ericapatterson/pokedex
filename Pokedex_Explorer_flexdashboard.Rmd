@@ -1,0 +1,409 @@
+---
+title: "Pokédex Explorer"
+output:
+  flexdashboard::flex_dashboard:
+    vertical_layout: fill
+    theme: journal
+runtime: shiny
+css: styles.css
+---
+
+PokéStats 
+=====================================
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(flexdashboard)
+library(shiny)
+library(leaflet)
+library(DT)
+library(sf)
+library(magick)
+library(stringr)
+library(htmltools)
+```
+
+```{r}
+# Load Colorado ecotone data if available
+if (file.exists("poke_data.RData")) {
+  load("poke_data.RData")
+  co_counties_map <- co_counties_ecotones %>% st_transform(4326)
+
+  poke_by_county <- co_counties_map %>%
+    st_drop_geometry() %>%
+    select(NAME, ecotone) %>%
+    inner_join(pokemon_clean_df, by = "ecotone", relationship = "many-to-many")
+}
+```
+
+```{r}
+# Load and transform pokemon_df
+
+pokemon_df <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2025/2025-04-01/pokemon_df.csv')
+
+pokemon_evolution <- readxl::read_excel("pokemon_evolution.xlsx")
+
+# Capitalize pokemon names 
+pokemon_df$pokemon <- str_to_title(pokemon_df$pokemon)
+
+# Filter pokemon_df to pokemon_evolution list and combine all evolution-related names into one character vector
+evo_names <- pokemon_evolution %>%
+  select(unevolved, evolution_one, evolution_two) %>%
+  unlist(use.names = FALSE) %>%
+  unique()
+
+# Filter pokemon_df so pokemon matches any of those names
+pokemon_df <- pokemon_df %>%
+  filter(pokemon %in% evo_names) 
+
+# Add reference columns to state what the base pokemon and evolution stage are 
+evo_long <- pokemon_evolution %>%
+  mutate(Base_pokemon = unevolved) %>% 
+  pivot_longer(
+    cols = c(unevolved, evolution_one, evolution_two),
+    names_to = "Stage",
+    values_to = "Pokemon"
+  ) %>% 
+  mutate(
+    Evolution_stage = case_when(
+      Stage == "unevolved"     ~ 0L,
+      Stage == "evolution_one" ~ 1L,
+      Stage == "evolution_two" ~ 2L
+    )
+  ) %>%
+  drop_na() %>% 
+  select(Pokemon, Base_pokemon, Evolution_stage) 
+
+# Merge the evolution reference to pokemon_df
+pokemon_df <- pokemon_df %>%
+  left_join(evo_long %>% select(Pokemon, Base_pokemon, Evolution_stage),
+            by = c("pokemon" = "Pokemon"))
+
+# Re-order columns in pokemon_df and remove duplicated rows
+pokemon_df <- pokemon_df %>%
+  select(pokemon, Evolution_stage, Base_pokemon, everything()) %>% 
+  distinct(pokemon, .keep_all = TRUE)
+
+# Choices for the stat dropdown
+stat_choices <- c(
+  "HP"               = "hp",
+  "Attack"           = "attack",
+  "Defense"          = "defense",
+  "Special Attack"   = "special_attack",
+  "Special Defense"  = "special_defense",
+  "Speed"            = "speed"
+)
+```
+
+<div class="pokedex-panel-title">Evolution Module</div>
+
+<div class="pokedex-card">
+Explore a Pokémon’s stats, sprite, and full evolution line using the controls below.
+</div>
+
+Column {data-width=30}
+-------------------------------------
+
+### Trainer Controls {data-width=30, data-height=400}
+
+```{r}
+# Pokémon picker
+tagList(
+  div(class = "control-label", "Pokémon"),
+  selectInput(
+    "filter_pokemon",
+    NULL,
+    choices = c(sort(unique(pokemon_df$pokemon))),
+    selected = "Eevee"
+  )
+)
+
+
+# Wrap the stat radio buttons in a scrollable container
+div(
+  style = "
+    max-height: 200px;
+    overflow-y: auto;
+    padding-right: 5px;
+    margin-top: 5px;
+  ",
+  radioButtons(
+    "power_stat",
+    label = "Choose a stat to visualize:",
+    choices = stat_choices,
+    selected = "hp"
+  )
+)
+```
+
+### Evolution Stat Comparison {data-width=30}
+
+```{r}
+renderPlot({
+  selected <- input$filter_pokemon
+  stat_col <- input$power_stat
+  req(selected, stat_col)
+
+  # Find base family for selected pokemon 
+  base_name <- pokemon_df %>% 
+    filter(pokemon == selected) %>% 
+    pull(Base_pokemon)
+
+  # Get all pokemon in the same family + order by stage
+  evo_group <- pokemon_df %>% 
+    filter(Base_pokemon == base_name) %>% 
+    arrange(Evolution_stage)
+
+  # Friendly label for the axis/title
+  stat_labels <- c(
+    hp              = "HP",
+    attack          = "Attack",
+    defense         = "Defense",
+    special_attack  = "Special Attack",
+    special_defense = "Special Defense",
+    speed           = "Speed"
+  )
+
+  y_lab <- stat_labels[[stat_col]]
+
+  ggplot(
+    evo_group,
+    aes(
+      x = .data[[stat_col]],
+      y = factor(pokemon, levels = evo_group$pokemon),
+      fill = type_1
+    )
+  ) +
+    geom_col() +
+    coord_flip() +
+    theme_minimal() +
+    theme(
+      legend.position = "none",
+      plot.title      = element_text(color = "black"),
+      axis.title.x    = element_text(color = "black"),
+      axis.title.y    = element_text(color = "black"),
+      axis.text.x     = element_text(color = "black"),
+      axis.text.y     = element_text(color = "black")
+    ) +
+    labs(
+      title = paste(selected, "Evolution", y_lab, "Stats"),
+      x = y_lab,
+      y = "Pokémon"
+    )
+})
+```
+
+Column {data-width=70}
+-------------------------------------
+
+### Pokémon Sprite Viewer {data-width=70, data-height=700}
+
+```{r}
+renderUI({
+  selected <- input$filter_pokemon
+  req(selected)
+
+  poke <- pokemon_df %>%
+    dplyr::filter(pokemon == selected) %>%
+    dplyr::slice(1)
+
+  url <- poke$url_image[1]
+
+  if (is.na(url) || url == "") {
+    return("No image available.")
+  }
+
+  # OUTER CENTERING WRAPPER
+  div(
+    style = "width:100%; display:flex; justify-content:center;",
+
+    # ACTUAL CARD
+    div(
+      class = "pokemon-card",
+
+      # CARD INNER LAYOUT
+      div(
+        class = "pokemon-card-inner",
+
+        # LEFT: IMAGE
+        tags$img(
+          src = url,
+          alt = selected,
+          class = "pokemon-card-img"
+        ),
+
+        # RIGHT: INFO PANEL
+        div(
+          class = "pokemon-card-info",
+
+          tags$h4(selected, class = "pokemon-card-name"),
+
+          tags$ul(
+            class = "pokemon-card-list",
+
+            tags$li(paste("Height (m):", poke$height)),
+            tags$li(paste("Weight (kg):", poke$weight)),
+            tags$li(paste("Primary type:", poke$type_1)),
+            tags$li(paste("Secondary type:", poke$type_2)),
+            tags$hr(),
+
+            tags$li(paste("Base experience:", poke$base_experience)),
+            tags$li(paste("HP:", poke$hp)),
+            tags$li(paste("Attack:", poke$attack)),
+            tags$li(paste("Defense:", poke$defense)),
+            tags$li(paste("Special Attack:", poke$special_attack)),
+            tags$li(paste("Special Defense:", poke$special_defense)),
+            tags$li(paste("Speed:", poke$speed)),
+            tags$hr(),
+
+            tags$li(paste("Base Pokémon:", poke$Base_pokemon)),
+            tags$li(paste("Evolution stage:", poke$Evolution_stage)),
+            tags$li(paste("Egg group:", poke$egg_group_1)),
+            tags$li(paste("Pokémon Generation:", poke$generation_id))
+          )
+        )
+      )
+    )
+  )
+})
+```
+
+### Evolution Line {data-width=70}
+
+```{r}
+renderUI({
+  selected <- input$filter_pokemon
+  req(selected)
+
+  # Find base family for the selected pokemon 
+  base_name <- pokemon_df %>% 
+    filter(pokemon == selected) %>% 
+    pull(Base_pokemon)
+
+  # Get all Pokémon in the same evolutionary family
+  evo_df <- pokemon_df %>%
+    filter(Base_pokemon == base_name) %>%
+    arrange(Evolution_stage)   # ensures proper order
+
+  if (nrow(evo_df) == 0) {
+    return(tags$p("No evolution images available.", style = "color:#444;"))
+  }
+
+  div(
+    class = "evolution-line-container",
+    style = "
+      height: 300px;
+      overflow-y: auto;
+      overflow-x: auto;
+      padding: 5px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    ",
+    lapply(seq_len(nrow(evo_df)), function(i) {
+      tags$div(
+        style = "
+          display: inline-block;
+          vertical-align: top;
+          width: 150px;
+          margin: 15px;
+          text-align: center;
+        ",
+        # Pokémon image
+        tags$img(
+          src = evo_df$url_image[i],
+          style = "
+            max-height: 150px;
+            width: 150px;
+            object-fit: contain;
+            display: block;
+            margin: 0 auto;
+          "
+        ),
+        # Pokémon name
+        tags$p(
+          evo_df$pokemon[i],
+          style = "
+            margin-top: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+          "
+        )
+      )
+    })
+  )
+})
+```
+
+
+PokéMap 
+=====================================
+
+Column {data-width=65}
+-------------------------------------
+
+### Colorado PokéMap {data-width=65}
+
+<div class="pokedex-card">
+View where each Pokémon appears across Colorado’s ecotones. Select a Pokémon on the right to highlight its counties and view its ecotone, type, and generation.
+</div>
+
+```{r}
+if (!exists("co_counties_map")) {
+  renderLeaflet({ leaflet() })
+} else {
+  renderLeaflet({
+    poke <- input$chosen_pokemon
+
+    highlight <- poke_by_county %>%
+      filter(pokemon == poke) %>%
+      pull(NAME)
+
+    fill <- ifelse(co_counties_map$NAME %in% highlight, "orange", "lightblue")
+
+    leaflet(co_counties_map) %>%
+      addTiles() %>%
+      addPolygons(
+        label = ~NAME,
+        fillColor = fill,
+        fillOpacity = 0.6,
+        color = "white",
+        weight = ifelse(co_counties_map$NAME %in% highlight, 4, 1)
+      )
+  })
+}
+```
+
+Column {data-width=35}
+-------------------------------------
+
+### Pokémon Details {data-width=35}
+
+```{r}
+if (exists("poke_by_county")) {
+  selectInput(
+    "chosen_pokemon",
+    "Select a Pokémon:",
+    choices = sort(unique(poke_by_county$pokemon))
+  )
+}
+```
+
+```{r}
+renderUI({
+  req(input$chosen_pokemon)
+
+  if (!exists("poke_by_county"))
+    return("Colorado dataset unavailable.")
+
+  row <- poke_by_county %>% filter(pokemon == input$chosen_pokemon) %>% slice(1)
+
+  tags$div(
+    tags$img(src = row$url_image[1], style = "max-width:500px; max-height:500px"),
+    tags$p(paste("Ecotone:", row$ecotone), style = "font-size:25px"),
+    tags$p(paste("Type:", row$type_1), style = "font-size:25px"),
+    tags$p(paste("Generation:", row$generation_id), style = "font-size:25px")
+  )
+})
+```
