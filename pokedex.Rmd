@@ -425,7 +425,8 @@ About
 <div class="pokedex-about">
 ### Welcome Trainers! 
 
-This Pokédex is designed to give you all the information you need as look for, catch and train your Pokémon for the Colorado Tournament of Champions. 
+This Pokédex is designed to give you all the information you need to look for, catch and train your Pokémon for the Colorado Tournament of Champions. 
+
 This tournament features challenges and obstacles that will take you through every ecosystem of Colorado and will require a team of Pokémon with diverse strengths and skills. Each Trainer may assemble up to 9 Pokémon to compete; we suggest a representative from each Colorado ecotone (Urban, Forest, Mountain, Agriculture, Water, Grassland, Riparian, Sand Dunes, and Steppe). Together, you and your Pokémon will compete in a melee-style Battle Royale against other teams and the elements in an arena designed to mimic the harshest challenges Colorado has to offer. 
 
 
