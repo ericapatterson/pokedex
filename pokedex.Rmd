@@ -422,29 +422,32 @@ renderUI({
 About 
 =====================================
 
-<div class="pokedex-card">
-Welcome Trainers! 
-
-
+<div class="pokedex-about">
+### Welcome Trainers! 
 
 This Pokédex is designed to give you all the information you need as look for, catch and train your Pokémon for the Colorado Tournament of Champions. 
 This tournament features challenges and obstacles that will take you through every ecosystem of Colorado and will require a team of Pokémon with diverse strengths and skills. Each Trainer may assemble up to 9 Pokémon to compete; we suggest a representative from each Colorado ecotone (Urban, Forest, Mountain, Agriculture, Water, Grassland, Riparian, Sand Dunes, and Steppe). Together, you and your Pokémon will compete in a melee-style Battle Royale against other teams and the elements in an arena designed to mimic the harshest challenges Colorado has to offer. 
 
 
 As you set out to build your team, use our interactive map to track down Pokémon in each Colorado ecotone. To do so, select a Pokémon from the dropdown menu on the right side of the Pokémap portal. An image of your selection will be displayed along with its Ecotone, Type, and Generation. On the left, the map of Colorado will display the counties in which your select Pokémon may be found. 
+
 Before trekking into the wilds (or urban areas) of Colorado to catch your Pokémon, read up on its stats and potential in the PokéStats portal. Here, again, you may select your Pokémon from the dropdown menu. An image of the selected Pokémon will be displayed along with detailed metrics on its natural history including size, powers, and evolution stage. Below the main image panel, images of all the variations in its evolutionary line will appear so you’ll know what’s in store should your Pokémon evolve. A final feature allows you to compare the power stats (HP, Defense, Attack, Special Defense, Special Attack and Speed) of the selected Pokémon to those in its evolution line. To do so, simply select the stat of interest from the left-hand panel of the portal, and see it visualized in the graphic beneath. 
 
 
 We wish you luck, and we will see you on the battlefield.
 
 
-Gotta catch ‘em all
+Gotta catch ‘em all!
 
-Sincerely 
+Sincerely,
+
 PokéTeam 535
 
-Data Source:
+### **Data Source:**
+
 TidyTudesday :Pokemon images, stats, life history
+
 Pokemon Evolution: evolution stage
+
 Kyles Ruszkowski: (ecotones of Colorado + the Pokemon that live there). 
 </div>
