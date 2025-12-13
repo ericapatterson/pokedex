@@ -445,7 +445,7 @@ PokéTeam 535
 
 ### **Data Source:**
 
-TidyTudesday :Pokemon images, stats, life history
+TidyTudesday: Pokemon images, stats, life history
 
 Pokemon Evolution: evolution stage
 
