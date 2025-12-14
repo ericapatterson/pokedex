@@ -548,3 +548,58 @@ a, a:hover{ color:#ffcb05; }
 .sprite-panel .pokemon-card-info{
   max-width: 300px !important;
 }
+/* flexdashboard containers that often clip content */
+.sprite-panel .chart-stage,
+.sprite-panel .chart-wrapper,
+.sprite-panel .chart-stage-flex,
+.sprite-panel .html-widget,
+.sprite-panel .shiny-html-output {
+  overflow: visible !important;
+}
+
+
+/* =========================================================
+   POKEDEX ABOUT CARD
+
+.pokedex-about {
+  background-color: #ffffff;
+  border-radius: 18px;
+  border: 3px solid #c00000;
+  padding: 14px 18px 12px 18px;
+  margin: 2px 0 16px 0;
+  position: relative;
+  z-index: 9999; /* 🔑 keeps it above Leaflet */
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  color: #333333;
+  font-size: 19px;
+  font-weight: 500;
+  box-sizing: border-box;
+}
+
+.pokedex-card p {
+  margin-top: 0;
+  margin-bottom: 1em;
+}
+
+.pokedex-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 10px;
+  border-radius: 14px 14px 0 0;
+  background: linear-gradient(90deg, #ef5350, #c00000);
+}
+
+.pokedex-card::after {
+  content: "";
+  position: absolute;
+  top: 6px;
+  right: 18px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #ffffff 0, #ffffff 40%, #ffcb05 41%, #ffcb05 100%);
+  box-shadow: 0 0 0 3px #333333;
+}

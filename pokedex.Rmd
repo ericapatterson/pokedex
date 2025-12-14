@@ -147,11 +147,17 @@ base_name <- pokemon_df %>%
   pull(Base_pokemon)
 
 # Get all pokemon in the same family + order by stage
+
 evo_group <- pokemon_df %>% 
   filter(Base_pokemon == base_name) %>% 
   arrange(Evolution_stage)
 
 # Friendly label for the axis/title
+# Ordered vector of Pokémon names for axis ordering
+  evo_vec <- evo_group$pokemon
+
+# Friendly label for the axis/title
+
 stat_labels <- c(
 hp              = "HP",
 attack          = "Attack",
@@ -187,6 +193,33 @@ ggplot(
     y = "Pokémon"
   ) +
   coord_flip()
+  ggplot(
+    evo_group,
+    aes(x = .data[[stat_col]],
+      y = factor(pokemon, levels = evo_group$pokemon),
+      fill = type_1)
+        ) +
+    geom_col() +
+    scale_x_continuous(expand = c(0,0)) + 
+    theme_minimal() +
+    theme(
+      legend.position = "none",
+      panel.grid = element_blank(),
+      axis.line = element_line(color = "black", linewidth = 0.2),
+      plot.title      = element_text(color = "black"),
+      axis.title.x    = element_text(color = "black"),
+      axis.title.y    = element_text(color = "black"),
+      axis.text.x    = element_text(color = "black",
+                                     angle = 30, 
+                                     hjust = 1),
+      axis.text.y     = element_text(color = "black"),
+          ) +
+    labs(
+      title = paste(selected, "Evolution", y_lab, "Stats"),
+      x = y_lab,
+      y = "Pokémon"
+        ) +
+    coord_flip() 
 })
 ```
 
@@ -213,6 +246,10 @@ renderUI({
   div(
     class = "sprite-panel-inner",
     style = "width:100%; display:flex; justify-content:center;",
+    class = "sprite-panel",
+    style = "width:100%; display:flex; justify-content:center;
+               overflow-y: auto;
+    ",
 
     div(
       class = "pokemon-card",
