@@ -38,9 +38,7 @@ if (file.exists("poke_data.RData")) {
 
 ```{r}
 # Load and transform pokemon_df
-
 pokemon_df <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2025/2025-04-01/pokemon_df.csv')
-
 pokemon_evolution <- readxl::read_excel("pokemon_evolution.xlsx")
 
 # Capitalize pokemon names 
@@ -118,7 +116,6 @@ tagList(
   )
 )
 
-
 # Wrap the stat radio buttons in a scrollable container
 div(
   style = "
@@ -155,6 +152,7 @@ evo_group <- pokemon_df %>%
   filter(Base_pokemon == base_name) %>% 
   arrange(Evolution_stage)
 
+# Friendly label for the axis/title
 # Ordered vector of Pokémon names for axis ordering
   evo_vec <- evo_group$pokemon
 
@@ -169,6 +167,32 @@ special_defense = "Special Defense",
 speed           = "Speed")
 
 y_lab <- stat_labels[[stat_col]]
+
+ggplot(
+  evo_group,
+  aes(x = .data[[stat_col]],
+      y = factor(pokemon, levels = evo_group$pokemon),
+      fill = type_1)
+) +
+  geom_col() +
+  scale_x_continuous(expand = c(0,0)) + 
+  theme_minimal() +
+  theme(
+    legend.position = "none",
+    panel.grid = element_blank(),
+    axis.line = element_line(color = "black", linewidth = 0.2),
+    plot.title      = element_text(color = "black"),
+    axis.title.x    = element_text(color = "black"),
+    axis.title.y    = element_text(color = "black"),
+    axis.text.x     = element_text(color = "black", angle = 30, hjust = 1),
+    axis.text.y     = element_text(color = "black")
+  ) +
+  labs(
+    title = paste(selected, "Evolution", y_lab, "Stats"),
+    x = y_lab,
+    y = "Pokémon"
+  ) +
+  coord_flip()
   ggplot(
     evo_group,
     aes(x = .data[[stat_col]],
@@ -202,7 +226,7 @@ y_lab <- stat_labels[[stat_col]]
 Column {data-width=70}
 -------------------------------------
 
-### Pokémon Sprite Viewer {data-width=70, data-height=750}
+### Pokémon Sprite Viewer {data-width=70, data-height=1200, .sprite-panel}
 
 ```{r}
 renderUI({
@@ -219,56 +243,49 @@ renderUI({
     return("No image available.")
   }
 
-  # OUTER CENTERING WRAPPER  ✅ add class = "sprite-panel"
   div(
+    class = "sprite-panel-inner",
+    style = "width:100%; display:flex; justify-content:center;",
     class = "sprite-panel",
     style = "width:100%; display:flex; justify-content:center;
                overflow-y: auto;
     ",
 
-    # ACTUAL CARD
     div(
       class = "pokemon-card",
 
-      # CARD INNER LAYOUT
       div(
         class = "pokemon-card-inner",
 
-        # LEFT: IMAGE
         tags$img(
           src = url,
           alt = selected,
           class = "pokemon-card-img"
         ),
 
-        # RIGHT: INFO PANEL
         div(
           class = "pokemon-card-info",
 
           tags$h4(selected, class = "pokemon-card-name"),
 
-          tags$ul(
-            class = "pokemon-card-list",
-
-            tags$li(paste("Height (m):", poke$height)),
-            tags$li(paste("Weight (kg):", poke$weight)),
-            tags$li(paste("Primary type:", poke$type_1)),
-            tags$li(paste("Secondary type:", poke$type_2)),
+          div(class="pokemon-stat-block",
+            div(class="pokemon-stat-row", tags$span("Height (m): "), tags$span(poke$height)),
+            div(class="pokemon-stat-row", tags$span("Weight (kg): "), tags$span(poke$weight)),
+            div(class="pokemon-stat-row", tags$span("Primary type: "), tags$span(poke$type_1)),
+            div(class="pokemon-stat-row", tags$span("Secondary type: "), tags$span(poke$type_2)),
             tags$hr(),
-
-            tags$li(paste("Base experience:", poke$base_experience)),
-            tags$li(paste("HP:", poke$hp)),
-            tags$li(paste("Attack:", poke$attack)),
-            tags$li(paste("Defense:", poke$defense)),
-            tags$li(paste("Special Attack:", poke$special_attack)),
-            tags$li(paste("Special Defense:", poke$special_defense)),
-            tags$li(paste("Speed:", poke$speed)),
+            div(class="pokemon-stat-row", tags$span("Base experience: "), tags$span(poke$base_experience)),
+            div(class="pokemon-stat-row", tags$span("HP: "), tags$span(poke$hp)),
+            div(class="pokemon-stat-row", tags$span("Attack: "), tags$span(poke$attack)),
+            div(class="pokemon-stat-row", tags$span("Defense: "), tags$span(poke$defense)),
+            div(class="pokemon-stat-row", tags$span("Special Attack: "), tags$span(poke$special_attack)),
+            div(class="pokemon-stat-row", tags$span("Special Defense: "), tags$span(poke$special_defense)),
+            div(class="pokemon-stat-row", tags$span("Speed: "), tags$span(poke$speed)),
             tags$hr(),
-
-            tags$li(paste("Base Pokémon:", poke$Base_pokemon)),
-            tags$li(paste("Evolution stage:", poke$Evolution_stage)),
-            tags$li(paste("Egg group:", poke$egg_group_1)),
-            tags$li(paste("Pokémon Generation:", poke$generation_id))
+            div(class="pokemon-stat-row", tags$span("Base Pokémon: "), tags$span(poke$Base_pokemon)),
+            div(class="pokemon-stat-row", tags$span("Evolution stage: "), tags$span(poke$Evolution_stage)),
+            div(class="pokemon-stat-row", tags$span("Egg group: "), tags$span(poke$egg_group_1)),
+            div(class="pokemon-stat-row", tags$span("Pokémon Generation: "), tags$span(poke$generation_id))
           )
         )
       )
@@ -277,22 +294,20 @@ renderUI({
 })
 ```
 
-### Evolution Line {data-width=70}
+### Evolution Line {data-width=70, data-height=520}
 
 ```{r}
 renderUI({
   selected <- input$filter_pokemon
   req(selected)
 
-  # Find base family for the selected pokemon 
   base_name <- pokemon_df %>% 
     filter(pokemon == selected) %>% 
     pull(Base_pokemon)
 
-  # Get all Pokémon in the same evolutionary family
   evo_df <- pokemon_df %>%
     filter(Base_pokemon == base_name) %>%
-    arrange(Evolution_stage)   # ensures proper order
+    arrange(Evolution_stage)
 
   if (nrow(evo_df) == 0) {
     return(tags$p("No evolution images available.", style = "color:#444;"))
@@ -301,43 +316,38 @@ renderUI({
   div(
     class = "evolution-line-container",
     style = "
-      height: 300px;
-      overflow-y: auto;
       overflow-x: auto;
-      padding: 5px;
+      overflow-y: hidden;
+      padding: 8px 6px;
       display: flex;
-      gap: 10px;
+      gap: 18px;
       align-items: flex-start;
+      flex-wrap: nowrap;
     ",
     lapply(seq_len(nrow(evo_df)), function(i) {
       tags$div(
+        class = "evo-tile",
         style = "
-          display: inline-block;
-          vertical-align: top;
-          width: 150px;
-          margin: 15px;
+          flex: 0 0 auto;
+          width: 160px;
+          margin: 10px 6px;
           text-align: center;
         ",
-        # Pokémon image
         tags$img(
           src = evo_df$url_image[i],
+          class = "evo-sprite",
           style = "
-            max-height: 150px;
-            width: 150px;
+            max-height: 170px;
+            width: 160px;
             object-fit: contain;
             display: block;
             margin: 0 auto;
           "
         ),
-        # Pokémon name
         tags$p(
           evo_df$pokemon[i],
-          style = "
-            margin-top: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            color: #333;
-          "
+          class = "evo-name",
+          style = "margin-top: 10px;"
         )
       )
     })
@@ -410,10 +420,25 @@ renderUI({
   row <- poke_by_county %>% filter(pokemon == input$chosen_pokemon) %>% slice(1)
 
   tags$div(
-    tags$img(src = row$url_image[1], style = "max-width:500px; max-height:500px"),
-    tags$p(paste("Ecotone:", row$ecotone), style = "font-size:25px"),
-    tags$p(paste("Type:", row$type_1), style = "font-size:25px"),
-    tags$p(paste("Generation:", row$generation_id), style = "font-size:25px")
+    class = "map-pokemon-card",
+
+    tags$div(
+      class = "map-pokemon-header",
+      tags$div(class = "map-pokemon-name", input$chosen_pokemon)
+    ),
+
+    tags$img(
+      src = row$url_image[1],
+      class = "map-pokemon-img",
+      alt = input$chosen_pokemon
+    ),
+
+    tags$div(
+      class = "map-chips",
+      tags$div(class="map-chip", tags$span(class="map-chip-label", "Ecotone:"), tags$span(class="map-chip-value", row$ecotone)),
+      tags$div(class="map-chip", tags$span(class="map-chip-label", "Type:"),    tags$span(class="map-chip-value", row$type_1)),
+      tags$div(class="map-chip", tags$span(class="map-chip-label", "Gen:"),     tags$span(class="map-chip-value", row$generation_id))
+    )
   )
 })
 ```
