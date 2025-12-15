@@ -245,7 +245,7 @@ renderUI({
 
   div(
     class = "sprite-panel-inner",
-    style = "width:100%; display:flex; justify-content:center;",
+    style = "width:100%; display:flex; justify-content:center",
     class = "sprite-panel",
     style = "width:100%; display:flex; justify-content:center;
                overflow-y: auto;
