@@ -474,7 +474,7 @@ PokéTeam 535
 
 TidyTudesday: Pokemon images, stats, life history
 
-Pokemon Evolution: evolution stage
+pokemon.fandom.com: evolution stage
 
 Kyles Ruszkowski: ecotones of Colorado + the Pokemon that live there. 
 </div>
