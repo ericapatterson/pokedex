@@ -25,8 +25,8 @@ library(htmltools)
 
 ```{r}
 # Load Colorado ecotone data if available
-if (file.exists("poke_data.RData")) {
-  load("poke_data.RData")
+if (file.exists("data/poke_data.RData")) {
+  load("data/poke_data.RData")
   co_counties_map <- co_counties_ecotones %>% st_transform(4326)
 
   poke_by_county <- co_counties_map %>%
@@ -39,7 +39,7 @@ if (file.exists("poke_data.RData")) {
 ```{r}
 # Load and transform pokemon_df
 pokemon_df <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2025/2025-04-01/pokemon_df.csv')
-pokemon_evolution <- readxl::read_excel("pokemon_evolution.xlsx")
+pokemon_evolution <- readxl::read_excel("data/pokemon_evolution.xlsx")
 
 # Capitalize pokemon names 
 pokemon_df$pokemon <- str_to_title(pokemon_df$pokemon)
