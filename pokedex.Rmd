@@ -23,7 +23,7 @@ library(stringr)
 library(htmltools)
 ```
 
-```{r}
+```{r, stat_data_load_clean}
 # Load Colorado ecotone data if available
 if (file.exists("data/poke_data.RData")) {
   load("data/poke_data.RData")
@@ -34,9 +34,7 @@ if (file.exists("data/poke_data.RData")) {
     select(NAME, ecotone) %>%
     inner_join(pokemon_clean_df, by = "ecotone", relationship = "many-to-many")
 }
-```
 
-```{r}
 # Load and transform pokemon_df
 pokemon_df <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2025/2025-04-01/pokemon_df.csv')
 pokemon_evolution <- readxl::read_excel("data/pokemon_evolution.xlsx")
@@ -104,7 +102,7 @@ Column {data-width=30}
 
 ### Trainer Controls {data-width=30, data-height=450}
 
-```{r}
+```{r trainer_controls}
 # Pokémon picker
 tagList(
   div(class = "control-label", "Pokémon"),
@@ -135,7 +133,7 @@ div(
 
 ### Evolution Stat Comparison {data-width=30}
 
-```{r}
+```{r power_bar_graph}
 renderPlot({
 selected <- input$filter_pokemon
 stat_col <- input$power_stat
@@ -228,7 +226,7 @@ Column {data-width=70}
 
 ### Pokémon Sprite Viewer {data-width=70, data-height=1200, .sprite-panel}
 
-```{r}
+```{r, sprite_viewer}
 renderUI({
   selected <- input$filter_pokemon
   req(selected)
@@ -297,7 +295,7 @@ renderUI({
 
 ### Evolution Line {data-width=70, data-height=520}
 
-```{r}
+```{r, evolution_line}
 renderUI({
   selected <- input$filter_pokemon
   req(selected)
@@ -369,7 +367,7 @@ Column {data-width=65}
 View where each Pokémon appears across Colorado’s ecotones. Select a Pokémon on the right to highlight its counties and view its ecotone, type, and generation.
 </div>
 
-```{r}
+```{r map_data_load_clean}
 if (!exists("co_counties_map")) {
   renderLeaflet({ leaflet() })
 } else {
@@ -400,7 +398,7 @@ Column {data-width=35}
 
 ### Pokémon Details {data-width=35}
 
-```{r}
+```{r dropdown_picker}
 if (exists("poke_by_county")) {
   selectInput(
     "chosen_pokemon",
@@ -411,7 +409,7 @@ if (exists("poke_by_county")) {
 }
 ```
 
-```{r}
+```{r map_ui}
 renderUI({
   req(input$chosen_pokemon)
 
