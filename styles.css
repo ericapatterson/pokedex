@@ -1,553 +1,350 @@
 /* =========================================================
-   FONTS (MUST BE AT VERY TOP OF FILE)
-========================================================= */
-@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@400;600;700;800&display=swap");
-
-:root{
-  --font-pokemon: "Press Start 2P", monospace;
-  --font-ui: "Nunito", "Helvetica Neue", Arial, sans-serif;
-}
-
-/* =========================================================
    GLOBAL
 ========================================================= */
-body{
-  background-color:#f7f7f7;
-  font-family: var(--font-ui);
-  color:#333;
+
+body {
+  background-color: #f7f7f7;
+  font-family: "Helvetica Neue", Arial, sans-serif;
 }
 
-/* Pixel font as accent only */
-.section h1,
-.section h2,
-.section h3{
-  font-family: var(--font-pokemon);
-  letter-spacing:0.6px;
+/* Section titles: PokéStats, PokéMap */
+.section h1 {
+  font-size: 36px !important;
+  font-weight: 800;
+  color: #c00000;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
 }
 
-.section h1{
-  font-size:32px !important;
-  font-weight:800;
-  color:#c00000;
-  margin:0 0 10px 0;
+/* Subtitles: Trainer Controls, Evolution Line, etc. */
+.section h3 {
+  font-size: 24px !important;
+  font-weight: 700;
+  color: #333333;
 }
 
-.section h3{
-  font-size:18px !important;
-  color:#333;
-}
-
-.section p{
-  font-family:var(--font-ui);
-  font-size:16px;
-  line-height:1.5;
-  color:#444;
-}
-
-.section{
-  padding-top:8px !important;
-}
-.section .level1{
-  padding-top:6px !important;
+/* Normal paragraph text */
+.section p {
+  font-size: 18px;
+  line-height: 1.5;
+  color: #444444;
 }
 
 /* =========================================================
    NAVBAR
 ========================================================= */
-.navbar{
-  background-color:#ef5350 !important;
-  border:none;
+
+.navbar {
+  background-color: #ef5350 !important;
+  border: none;
 }
 
-.navbar-brand{
-  font-family:var(--font-pokemon);
-  font-size:26px !important;
-  font-weight:800;
-  color:#fff !important;
-  letter-spacing:1px;
+.navbar-brand {
+  font-size: 30px !important;
+  font-weight: 800;
+  color: #ffffff !important;
 }
 
-.navbar-nav > li > a{
-  font-family:var(--font-ui);
-  font-size:16px;
-  font-weight:700;
-  color:#ffecec !important;
+.navbar-nav > li > a {
+  font-size: 18px;
+  font-weight: 600;
+  color: #ffecec !important;
 }
 
-.navbar-nav > .active > a{
-  background:#fff !important;
-  color:#c00000 !important;
-  border-radius:20px 20px 0 0;
+.navbar-nav > .active > a,
+.navbar-nav > .active > a:focus,
+.navbar-nav > .active > a:hover {
+  background-color: #ffffff !important;
+  color: #c00000 !important;
+  border-radius: 20px 20px 0 0;
+}
+
+.navbar-nav > li > a:hover {
+  background-color: rgba(255, 255, 255, 0.15) !important;
 }
 
 /* =========================================================
    FLEXDASHBOARD PANELS
 ========================================================= */
-.chart-stage{
-  background:#fff;
-  border-radius:16px;
-  padding:14px;
-  box-shadow:0 4px 8px rgba(0,0,0,0.06);
+
+.chart-stage {
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.06);
 }
 
 .chart-title,
-.pokedex-panel-title{
-  font-family:var(--font-pokemon);
-  font-size:15px !important;
-  font-weight:800 !important;
-  color:#c00000 !important;
-  margin:0 0 8px 0 !important;
-  padding-bottom:6px;
-  border-bottom:1px solid #ddd;
-}
-
-/* =========================================================
-   INSTRUCTION / INTRO BAR
-========================================================= */
-.pokedex-card{
-  display:block !important;
-  background:#fff;
-  border-radius:18px;
-  border:4px solid #c00000;
-  padding:12px 18px !important;
-  line-height:1.35 !important;
-
-  max-width:760px;
-  margin:10px 0 16px 12px !important;
-
-  box-shadow:0 4px 10px rgba(0,0,0,0.08);
-  font-family:var(--font-ui);
-  font-size:16px !important;
-  font-weight:600 !important;
-  color:#333 !important;
-
-  position:relative;
-  overflow:visible !important;
-}
-.pokedex-card p{ margin:0 !important; }
-
-/* Pokéball accent */
-.pokedex-card::after{
-  content:"";
-  position:absolute;
-  right:-14px;
-  top:50%;
-  transform:translateY(-50%);
-  width:28px;
-  height:28px;
-  border-radius:50%;
-  background:
-    linear-gradient(to bottom,
-      #ef5350 0%,
-      #ef5350 48%,
-      #000 48%,
-      #000 52%,
-      #fff 52%,
-      #fff 100%
-    );
-  border:3px solid #000;
-  box-shadow:0 0 0 2px #fff;
-}
-.pokedex-card::before{
-  content:"";
-  position:absolute;
-  right:-6px;
-  top:50%;
-  transform:translateY(-50%);
-  width:10px;
-  height:10px;
-  background:#fff;
-  border:2px solid #000;
-  border-radius:50%;
-  z-index:2;
+.pokedex-panel-title {
+  font-weight: 700;
+  font-size: 18px;
+  color: #c00000;
+  margin: 0 0 10px 0;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #dddddd;
 }
 
 /* =========================================================
    FORMS
 ========================================================= */
-.form-control{
-  border-radius:999px;
-  border:2px solid #ef5350;
-  font-family:var(--font-ui);
+
+.form-control {
+  border-radius: 999px;
+  border: 2px solid #ef5350;
 }
 
-.control-label,
 .radio label,
-.shiny-input-container label{
-  font-family:var(--font-ui);
-  font-weight:700 !important;
-  color:#666 !important;
+.control-label {
+  font-weight: 600;
 }
 
-/* =========================================================
-   SPRITE VIEWER PANEL BACKGROUND (PokéStats)
-========================================================= */
-.sprite-panel .chart-stage{
-  position:relative;
-  background:
-    radial-gradient(circle at 50% 45%,
-      rgba(255,203,5,0.14) 0%,
-      rgba(255,203,5,0.08) 26%,
-      rgba(255,255,255,0) 60%
-    ),
-    linear-gradient(135deg,
-      rgba(239,83,80,0.05),
-      rgba(0,220,255,0.04),
-      rgba(255,203,5,0.05)
-    ),
-    #fff;
-}
-
-/* IMPORTANT:
-   Keep the sprite panel constrained to its flexdashboard height so it DOES NOT overlap other panels.
-   (Do NOT set height:auto here.) */
-.sprite-panel .chart-stage,
-.sprite-panel .chart-shim{
-  height:100% !important;
-  min-height:0 !important;
-  overflow:visible !important;
-  padding:22px 22px 28px 22px !important;
-}
-
-/* Center the card, but don't shrink it weirdly */
-.sprite-panel-inner{
-  width:100% !important;
-  display:flex !important;
-  justify-content:center !important;
-  align-items:flex-start !important;
-}
-
-/* =========================================================
-   POKÉMON CARD (PokéStats sprite)
-========================================================= */
-.pokemon-card{
-  position:relative;
-  isolation:isolate;
-  background:linear-gradient(180deg,#fff 0%,#f8f8f8 100%);
-  border-radius:20px;
-  border:3px solid #c00000;
-  padding:18px;
-
-  /* prevents “squeezed” look */
-  width:min(860px, 95%);
-  max-width:860px;
-
-  margin:12px auto 10px auto !important;
-  box-shadow:0 6px 16px rgba(0,0,0,0.12);
-  overflow:hidden;
-  transition:transform 0.25s ease, box-shadow 0.25s ease;
-}
-
-.pokemon-card:hover{
-  transform:translateY(-2px);
-  box-shadow:
-    0 10px 22px rgba(0,0,0,0.14),
-    0 0 22px rgba(255,203,5,0.35);
-}
-
-.pokemon-card-inner{
-  position:relative;
-  display:flex;
-  align-items:center;
-  gap:24px;
-  border-radius:16px;
-  overflow:hidden;
-  z-index:3;
-}
-
-/* On narrower screens, stack to avoid squish */
-@media (max-width: 1100px){
-  .pokemon-card-inner{
-    flex-wrap:wrap;
-    justify-content:center;
-  }
-}
-
-.pokemon-card-img{
-  max-width:300px;
-  width:100%;
-  height:auto;
-  transition:transform 0.25s ease, filter 0.25s ease;
-}
-.pokemon-card:hover .pokemon-card-img{
-  transform:scale(1.04);
-  filter:drop-shadow(0 0 22px rgba(255,203,5,0.85));
-}
-
-.pokemon-card-info{
-  max-width:340px;
-  max-height:360px;
-  overflow-y:auto;
-  background:rgba(255,255,255,0.7);
-  border-radius:12px;
-  padding:10px 14px;
-  font-size:13px;
-  line-height:1.35;
-}
-
-.pokemon-card-name{
-  font-family:var(--font-pokemon);
-  font-size:14px !important;
-  margin:0 0 8px 0 !important;
+.radio {
+  margin-bottom: 5px;
 }
 
 /* =========================================================
    EVOLUTION LINE
 ========================================================= */
-.evolution-line-container{
-  background:#fff;
-  border-radius:16px;
-  padding:26px !important;
 
-  overflow-y:hidden !important;
-  overflow-x:auto !important;
-
-  height:auto !important;
-  padding-bottom:34px !important;
+.evolution-line-container {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 10px;
 }
 
-.evolution-line-container img{
-  transition:transform 0.2s ease, filter 0.2s ease;
-}
-.evolution-line-container img:hover{
-  transform:translateY(-4px) scale(1.04);
-  filter:drop-shadow(0 0 18px rgba(255,203,5,0.85));
+.evolution-line-container img {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border-radius: 12px;
 }
 
-.evolution-line-container figcaption,
-.evolution-line-container p,
-.evolution-line-container .evo-name{
-  font-family:var(--font-pokemon) !important;
-  font-size:12px !important;
-  letter-spacing:0.3px;
-  margin:8px 0 0 0 !important;
+.evolution-line-container img:hover {
+  transform: translateY(-4px) scale(1.04);
+  box-shadow: 0 0 18px rgba(255, 203, 5, 0.8);
+}
+
+/* =========================================================
+   LEAFLET MAP
+========================================================= */
+
+.leaflet-container {
+  border-radius: 16px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+}
+
+/* =========================================================
+   POKEDEX INTRO CARD
+========================================================= */
+
+.pokedex-card {
+  background-color: #ffffff;
+  border-radius: 18px;
+  border: 3px solid #c00000;
+  padding: 14px 18px 12px 18px;
+  margin: 2px 0 16px 0;
+  position: relative;
+  z-index: 9999; /* 🔑 keeps it above Leaflet */
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  color: #333333;
+  font-size: 19px;
+  font-weight: 500;
+  box-sizing: border-box;
+}
+
+.pokedex-card p {
+  margin-bottom: 0;
+}
+
+.pokedex-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 10px;
+  border-radius: 14px 14px 0 0;
+  background: linear-gradient(90deg, #ef5350, #c00000);
+}
+
+.pokedex-card::after {
+  content: "";
+  position: absolute;
+  top: 6px;
+  right: 18px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #ffffff 0, #ffffff 40%, #ffcb05 41%, #ffcb05 100%);
+  box-shadow: 0 0 0 3px #333333;
+}
+
+/* =========================================================
+   POKÉMON SPRITE CARD (MAIN)
+========================================================= */
+
+.pokemon-card {
+  background: linear-gradient(180deg, #ffffff 0%, #f8f8f8 100%);
+  border-radius: 20px;
+  border: 3px solid #c00000;
+  padding: 18px;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+
+  max-width: 700px;
+  margin: 14px auto;
+
+  box-shadow:
+    0 6px 16px rgba(0,0,0,0.12),
+    inset 0 0 0 1px rgba(255,255,255,0.4);
+}
+
+/* layout inside card */
+.pokemon-card-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+}
+
+/* sprite image */
+.pokemon-card-img {
+  max-width: 260px;
+  height: auto;
+  display: block;
+  margin-bottom: 6px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.pokemon-card:hover .pokemon-card-img {
+  transform: scale(1.05);
+  box-shadow: 0 0 28px rgba(255, 203, 5, 0.6);
+}
+
+/* right-side info */
+.pokemon-card-info {
+  max-width: 320px;
+  font-size: 13px;
+  line-height: 1.35;
+  text-align: left;
+  background: rgba(255,255,255,0.65);
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+
+/* name */
+.pokemon-card-name {
+  font-size: 18px;
+  font-weight: 800;
+  color: #111;
+  margin-bottom: 8px;
+}
+
+/* stat list */
+.pokemon-card-list {
+  list-style: none;
+  padding-left: 0;
+  margin: 8px 0 0 0;
+}
+
+.pokemon-card-list li {
+  margin: 2px 0;
+}
+
+.pokemon-card hr {
+  margin: 10px 0;
+  border: 0;
+  border-top: 1px solid #e6e6e6;
+}
+
+/* =========================================================
+   HOLO / FOIL EFFECT (SUBTLE)
+========================================================= */
+
+.pokemon-card-inner,
+.pokemon-card-img,
+.pokemon-card-info {
+  position: relative;
+  z-index: 3;
+}
+
+.pokemon-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+
+  background: repeating-linear-gradient(
+    135deg,
+    rgba(255, 0, 140, 0.18) 0px,
+    rgba(255, 0, 140, 0.18) 12px,
+    rgba(0, 220, 255, 0.14) 12px,
+    rgba(0, 220, 255, 0.14) 24px,
+    rgba(255, 203, 5, 0.14) 24px,
+    rgba(255, 203, 5, 0.14) 36px,
+    rgba(0, 255, 140, 0.12) 36px,
+    rgba(0, 255, 140, 0.12) 48px
+  );
+
+  opacity: 0.18;
+  transform: rotate(-8deg) scale(1.2);
+  transition: opacity 0.25s ease;
+}
+
+.pokemon-card::before {
+  content: "";
+  position: absolute;
+  inset: -60%;
+  z-index: 2;
+  pointer-events: none;
+
+  background: linear-gradient(
+    115deg,
+    rgba(255,255,255,0) 42%,
+    rgba(255,255,255,0.85) 50%,
+    rgba(255,255,255,0) 58%
+  );
+
+  transform: translateX(-55%) rotate(12deg);
+  opacity: 0.08;
+  transition: opacity 0.25s ease, transform 0.8s ease;
+}
+
+.pokemon-card:hover::after {
+  opacity: 0.40;
+  animation: holoShift 2.2s linear infinite;
+}
+
+.pokemon-card:hover::before {
+  opacity: 0.55;
+  transform: translateX(55%) rotate(12deg);
+}
+
+@keyframes holoShift {
+  0%   { filter: hue-rotate(0deg); }
+  50%  { filter: hue-rotate(90deg); }
+  100% { filter: hue-rotate(180deg); }
 }
 
 /* =========================================================
    LINKS
 ========================================================= */
-a, a:hover{ color:#ffcb05; }
 
-/* =========================================================
-   REMOVE BULLETS IN STATS (legacy safe)
-========================================================= */
-.pokemon-card-info ul,
-.pokemon-card-info ol,
-.pokemon-card-info li{
-  list-style:none !important;
-  margin:0 !important;
-  padding:0 !important;
-}
-.pokemon-card-info li::marker{ content:"" !important; }
-.pokemon-card-info li::before{ content:"" !important; }
-
-/* =========================================================
-   HOLO/FOIL RESTORE
-========================================================= */
-.pokemon-card{
-  overflow:hidden !important;
-}
-
-.pokemon-card::after{
-  content:"" !important;
-  position:absolute !important;
-  inset:0 !important;
-  z-index:1 !important;
-  pointer-events:none !important;
-  background: repeating-linear-gradient(
-    135deg,
-    rgba(255, 0, 140, 0.20) 0px,
-    rgba(0, 220, 255, 0.16) 24px,
-    rgba(255, 203, 5, 0.14) 48px
-  ) !important;
-  opacity:0 !important;
-  transition:opacity 0.25s ease !important;
-}
-
-.pokemon-card::before{
-  content:"" !important;
-  position:absolute !important;
-  inset:0 !important;
-  z-index:2 !important;
-  pointer-events:none !important;
-  background: linear-gradient(
-    115deg,
-    rgba(255,255,255,0) 42%,
-    rgba(255,255,255,0.9) 50%,
-    rgba(255,255,255,0) 58%
-  ) !important;
-  opacity:0 !important;
-  transform: translateX(-40%) rotate(12deg) !important;
-  transition: opacity 0.25s ease, transform 0.8s ease !important;
-}
-
-.pokemon-card:hover::after{
-  opacity:0.30 !important;
-  animation:holoShift 2.4s linear infinite !important;
-}
-.pokemon-card:hover::before{
-  opacity:0.55 !important;
-  transform: translateX(40%) rotate(12deg) !important;
-}
-
-.pokemon-card-inner,
-.pokemon-card-img,
-.pokemon-card-info{
-  position:relative !important;
-  z-index:3 !important;
-}
-
-.pokemon-card-inner::after{
-  content:"" !important;
-  position:absolute !important;
-  inset:0 !important;
-  z-index:2 !important;
-  pointer-events:none !important;
-  background:
-    radial-gradient(circle at 12% 22%, rgba(255,255,255,0.9) 0 1px, transparent 2px),
-    radial-gradient(circle at 72% 18%, rgba(255,255,255,0.8) 0 1px, transparent 2px),
-    radial-gradient(circle at 44% 60%, rgba(255,255,255,0.7) 0 1px, transparent 2px),
-    radial-gradient(circle at 85% 68%, rgba(255,255,255,0.6) 0 1px, transparent 2px) !important;
-  opacity:0 !important;
-}
-.pokemon-card:hover .pokemon-card-inner::after{
-  opacity:0.5 !important;
-  animation:sparkleTwinkle 1.9s ease-in-out infinite !important;
-}
-
-@keyframes holoShift{
-  0%{ filter:hue-rotate(0deg); }
-  50%{ filter:hue-rotate(90deg); }
-  100%{ filter:hue-rotate(180deg); }
-}
-@keyframes sparkleTwinkle{
-  0%{ opacity:0.25; }
-  50%{ opacity:0.55; }
-  100%{ opacity:0.25; }
+a,
+a:hover,
+a:focus {
+  color: #ffcb05;
 }
 
 /* =========================================================
-   Sprite stats scrollbar (faint red → stronger on hover)
-========================================================= */
-/* Firefox */
-.pokemon-card-info{
-  scrollbar-width: thin;
-  scrollbar-color: rgba(239,83,80,0.55) rgba(239,83,80,0.10);
-}
-.pokemon-card-info:hover{
-  scrollbar-color: rgba(239,83,80,0.90) rgba(239,83,80,0.14);
-}
-
-/* Chrome / Safari */
-.pokemon-card-info::-webkit-scrollbar{ width:7px; }
-.pokemon-card-info::-webkit-scrollbar-track{
-  background: rgba(239,83,80,0.10);
-  border-radius:999px;
-}
-.pokemon-card-info::-webkit-scrollbar-thumb{
-  background: rgba(239,83,80,0.45);
-  border-radius:999px;
-}
-.pokemon-card-info:hover::-webkit-scrollbar-thumb{
-  background: rgba(239,83,80,0.85);
-}
-
-/* =========================================================
-   POKÉMAP DETAILS — support BOTH class versions
-   (prevents giant/cropped sprite + adds background)
-========================================================= */
-.map-details-card,
-.map-pokemon-card{
-  position:relative;
-  border-radius:18px;
-  border:3px solid #c00000;
-  padding:14px 14px 16px 14px;
-  margin-top:10px;
-  box-shadow:0 6px 14px rgba(0,0,0,0.10);
-
-  background:
-    radial-gradient(circle at 55% 35%,
-      rgba(255,203,5,0.14) 0%,
-      rgba(255,203,5,0.06) 30%,
-      rgba(255,255,255,0) 62%
-    ),
-    linear-gradient(135deg,
-      rgba(239,83,80,0.05),
-      rgba(0,220,255,0.03),
-      rgba(255,203,5,0.05)
-    ),
-    #ffffff;
-}
-
-.map-details-name,
-.map-pokemon-name{
-  font-family:var(--font-pokemon);
-  color:#c00000;
-  font-size:14px !important;
-  letter-spacing:0.4px;
-  margin:4px 0 10px 0 !important;
-}
-
-/* Constrain the PokéMap sprite so it NEVER zooms/crops */
-.map-details-img,
-.map-pokemon-img{
-  width:100%;
-  max-width:520px;
-  max-height:420px;
-  height:auto;
-  display:block;
-  margin:10px auto 10px auto;
-  object-fit:contain;
-  filter: drop-shadow(0 10px 18px rgba(0,0,0,0.10));
-}
-
-/* Chips */
-.map-details-chips,
-.map-chips{
-  display:flex;
-  gap:10px;
-  justify-content:center;
-  flex-wrap:wrap;
-  margin-top:6px;
-}
-
-.map-details-chips .chip,
-.map-chip{
-  font-family:var(--font-ui);
-  font-size:12px;
-  font-weight:700;
-  color:#333;
-  background: rgba(255,255,255,0.85);
-  border: 1px solid rgba(239,83,80,0.25);
-  border-radius:999px;
-  padding:6px 10px;
-  box-shadow:0 2px 8px rgba(0,0,0,0.06);
-}
-
-.map-chip-label{ font-weight:800; margin-right:6px; }
-.map-chip-value{ font-weight:700; }
-
-/* =========================================================
-   FIX: PokéStats sprite card is too wide
-   (caps card width + sprite size so it doesn't look huge)
+   FIX: STOP SPRITE CARD FROM GETTING CLIPPED (PokéStats only)
 ========================================================= */
 
-/* cap the whole card */
-.sprite-panel .pokemon-card{
-  width: min(500px, 92%) !important;   /* <- main fix */
-  max-width: 640px !important;
-  margin: 14px auto !important;
+.sprite-panel {
+  overflow: visible !important;
 }
 
-/* slightly smaller sprite inside the card */
-.sprite-panel .pokemon-card-img{
-  max-width: 240px !important;
-}
-
-/* keep stats box from growing too wide */
-.sprite-panel .pokemon-card-info{
-  max-width: 300px !important;
-}
 /* flexdashboard containers that often clip content */
 .sprite-panel .chart-stage,
 .sprite-panel .chart-wrapper,
@@ -560,6 +357,7 @@ a, a:hover{ color:#ffcb05; }
 
 /* =========================================================
    POKEDEX ABOUT CARD
+========================================================= */
 
 .pokedex-about {
   background-color: #ffffff;
